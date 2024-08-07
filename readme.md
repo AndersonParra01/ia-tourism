@@ -19,7 +19,8 @@ Este proyecto tiene como objetivo desarrollar un asistente virtual de turismo en
 
    ```
    cd tu-repositorio/backend
-   source env/bin/activate
+   python -m venv venv            (Crear el entorno virtual)
+   source env/bin/activate       (Activar el entorno virtual)
    pip install -r requirements.txt
    ```
 
