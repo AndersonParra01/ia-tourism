@@ -101,3 +101,5 @@ http://localhost:8080
 Si deseas colaborar en este proyecto, sigue los pasos anteriores para clonar y levantar el proyecto en tu entorno local. Luego, puedes realizar cambios, agregar nuevas funcionalidades y enviar pull requests para revisión.
 
 ## Recuerda agregar el archivo `.env` en el backend.
+
+![Descripción de la imagen](images/ENV.png)
