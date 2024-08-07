@@ -100,8 +100,4 @@ http://localhost:8080
 
 Si deseas colaborar en este proyecto, sigue los pasos anteriores para clonar y levantar el proyecto en tu entorno local. Luego, puedes realizar cambios, agregar nuevas funcionalidades y enviar pull requests para revisión.
 
-¡Esperamos tus contribuciones!
-
-Recuerda agregar el archivo `.env` en el backend.
-
-Este proyecto tiene como objetivo desarrollar un asistente virtual de turismo enfocado en Ecuador, utilizando la inteligencia artificial de OpenAI. El asistente virtual proporcionará información y recomendaciones sobre destinos turísticos, actividades, alojamientos y más.
+## Recuerda agregar el archivo `.env` en el backend.
