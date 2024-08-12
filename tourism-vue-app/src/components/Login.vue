@@ -49,7 +49,7 @@ export default defineComponent({
 
     const handleLogin = async () => {
       try {
-        const user = await 
+        // const user = await 
         await store.dispatch("auth/login", {
           userName: userName.value,
           password: password.value,
