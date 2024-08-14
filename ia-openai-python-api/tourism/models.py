@@ -1,10 +1,13 @@
+# tourism/models.py
 from django.db import models
+from user.models import CustomUser
 
-# Create your models here.
-class Item ():
+class TouristPlace(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
+    image = models.TextField()
+    location = models.CharField(max_length=100)
+    users = models.ManyToManyField(CustomUser, related_name='places')
 
-
-    def __str__(self):
-        return self.name
+    class Meta:
+        db_table = 'tourist_places'

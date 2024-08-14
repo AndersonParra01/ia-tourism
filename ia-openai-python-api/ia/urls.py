@@ -16,7 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from tourism.views import TouristPlaceViewSet
+from rest_framework.routers import DefaultRouter
+
+
 
 urlpatterns = [
-    path('api/', include('tourism.urls')),
+    path('api/',  include('user.urls')),
+    path('api/',  include('tourism.urls')),
+
 ]
