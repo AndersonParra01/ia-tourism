@@ -80,7 +80,7 @@ http://127.0.0.1:8000/
 1. Instala las dependencias del frontend:
 
 ```
-cd ../frontend
+cd ./tourism-vue-app
 npm install
 ```
 
