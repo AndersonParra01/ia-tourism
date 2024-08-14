@@ -23,80 +23,52 @@ def language_selector(language_code):
         raise ValueError(f"Language code '{language_code}' is not supported.")
     return language_code
 
-""" @api_view(['GET'])
-def get_tourist_recommendations(request):
-    print('REQUE', request)
-    prompt = request.query_params.get('prompt')
-    language = request.query_params.get('language', 'en')
-    print('LANG', language)
-    if not prompt:
-        return Response({'error': 'prompt query parameter is required'}, status=400)
-
-    try:
-        selected_language = language_selector(language)
-    except ValueError as e:
-        return Response({'error': str(e)}, status=400)
-    
-    openai.api_key = settings.OPENAI_API_KEY
-
-    try:
-        response = openai.chat.completations.create(
-            model='gpt-4',
-            messages=[
-                {'role': 'system', 'content': 'You are a helpful assistant specialized in tourism for Ecuador.'},
-                {'role': 'user', 'content': prompt}
-            ],
-            temperature=0.8,
-            max_tokens=1000
-        )
-        recommendations = response.choices[0].message.content
-        print('RECO', recommendations)
-        translator = GoogleTranslator(source='auto', target=selected_language)
-        translated_recommendations = translator.translate(recommendations)
-        
-        return Response({'response': translated_recommendations})
-
-    except Exception as e:
-        return Response({'error': str(e)}, status=500)
- """
-
 @api_view(['GET'])
 def get_completion(request):
     prompt = request.query_params.get('prompt')
     openai.api_key = settings.OPENAI_API_KEY
 
     try:
-        # Generar la respuesta principal usando la nueva API de OpenAI
+        combined_prompt = f"""
+        1. Provide a detailed and accurate description of the place: {prompt}.
+        2. Describe the typical food of the region mentioned in the prompt.
+        3. List the languages spoken in the region described.
+        4. Describe the traditional music associated with the place.
+        5. Describe the regions associated with the place.
+        """
+
         response = openai.chat.completions.create(
             model='gpt-4',
             messages=[
                 {'role': 'system', 'content': 'You are a helpful assistant specialized in tourism for Ecuador.'},
-                {'role': 'user', 'content': prompt}
+                {'role': 'user', 'content': combined_prompt}
             ],
             temperature=0.8,
             max_tokens=1000
         )
-        
-        # Extraer el contenido del mensaje desde la respuesta
-        print('CONTENT', response.choices[0].message.content)
+        print('XD', response)
+
         content = response.choices[0].message.content
 
-        # Usar OpenAI para generar las respuestas detalladas
-        description_place = generate_description(prompt)
-        typical_food = generate_typical_food(prompt)
-        languages = generate_languages_info(prompt)
-        traditional_music = generate_traditional_music(prompt)
-        regions = generate_regions_info(prompt)
+        parts = content.split('\n\n')
 
-        # Formar el JSON de respuesta
+        description_place = parts[0]
+        typical_food = parts[1]
+        languages = parts[2]
+        traditional_music = parts[3]
+        regions = parts[4]
+
+        generate_image = generate_image_ia(prompt)
+
+
         response_data = {
             'description_place': description_place,
-            'image': '',  # Esto se puede llenar más adelante con una API de imágenes
+            'image': generate_image,
             'location': '',  # Esto también puede ser llenado con una API de localización
             'typical_food': typical_food,
             'languages': languages,
             'traditional_music': traditional_music,
-            'city_tourist_map': '',  # Se puede usar una API de mapas para esto
+            'city_tourist_map': '',  # Se puede usar Google Maps Static API o similar aquí
             'map_of_tourist_places_in_ecuador': '',  # Similar al campo anterior
             'hotels': '',  # Podrías integrar una API de hoteles aquí
             'regions': regions,
@@ -107,70 +79,16 @@ def get_completion(request):
     except Exception as e:
         return Response({'error': str(e)}, status=400)
 
-
-def generate_description(prompt):
-    response = openai.chat.completions.create(
-        model='gpt-4',
-        messages=[
-            {'role': 'system', 'content': 'Provide a detailed and accurate description of the place based on the given prompt.'},
-            {'role': 'user', 'content': prompt}
-        ],
-        temperature=0.7,
-        max_tokens=300
+def generate_image_ia(prompt):
+    response = openai.images.generate(
+        model='dall-e-3',
+        prompt=prompt,
+        size="1024x1024",
+        quality="standard",
+        n=1,
     )
-    return response.choices[0].message.content
-
-
-def generate_typical_food(prompt):
-    response = openai.chat.completions.create(
-        model='gpt-4',
-        messages=[
-            {'role': 'system', 'content': 'Describe the typical food of the region mentioned in the prompt.'},
-            {'role': 'user', 'content': prompt}
-        ],
-        temperature=0.7,
-        max_tokens=150
-    )
-    return response.choices[0].message.content
-
-
-def generate_languages_info(prompt):
-    response = openai.chat.completions.create(
-        model='gpt-4',
-        messages=[
-            {'role': 'system', 'content': 'List the languages spoken in the region described in the prompt.'},
-            {'role': 'user', 'content': prompt}
-        ],
-        temperature=0.7,
-        max_tokens=100
-    )
-    return response.choices[0].message.content
-
-
-def generate_traditional_music(prompt):
-    response = openai.chat.completions.create(
-        model='gpt-4',
-        messages=[
-            {'role': 'system', 'content': 'Describe the traditional music associated with the place mentioned in the prompt.'},
-            {'role': 'user', 'content': prompt}
-        ],
-        temperature=0.7,
-        max_tokens=150
-    )
-    return response.choices[0].message.content
-
-
-def generate_regions_info(prompt):
-    response = openai.chat.completions.create(
-        model='gpt-4',
-        messages=[
-            {'role': 'system', 'content': 'Describe the regions associated with the place mentioned in the prompt.'},
-            {'role': 'user', 'content': prompt}
-        ],
-        temperature=0.7,
-        max_tokens=200
-    )
-    return response.choices[0].message.content
+    print(response)
+    return response.data[0].url
 
 #CRUD BY PLACE-TOURISM
 
