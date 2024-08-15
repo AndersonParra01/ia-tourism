@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import Login from "../components/Login.vue";
 import Register from "../components/Register.vue";
 import Map from "../components/Map.vue";
+import Tourism from "@/components/tourism.vue";
 
 const routes = [
   {
@@ -22,6 +23,11 @@ const routes = [
     path: "/map",
     name: "Map",
     component: Map,
+  },
+  {
+    path: "/tourism",
+    name: "Tourism",
+    component: Tourism,
   },
 ];
 
