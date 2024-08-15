@@ -43,7 +43,7 @@ def get_completion(request):
                 {'role': 'system', 'content': 'You are a helpful assistant specialized in tourism for Ecuador.'},
                 {'role': 'user', 'content': combined_prompt}
             ],
-            temperature=0.8,
+            temperature=0.9,
             max_tokens=1000
         )
         print('XD', response)
@@ -58,12 +58,12 @@ def get_completion(request):
         traditional_music = parts[3]
         regions = parts[4]
 
-        generate_image = generate_image_ia(prompt)
+        """  generate_image = generate_image_ia(prompt) """
 
 
         response_data = {
             'description_place': description_place,
-            'image': generate_image,
+            """ 'image': generate_image, """
             'location': '',  # Esto también puede ser llenado con una API de localización
             'typical_food': typical_food,
             'languages': languages,
