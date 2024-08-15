@@ -1,5 +1,5 @@
 <template>
-    <div style="height: 72vh; width: 50vw;">
+    <div style="height: 55vh; width: 30vw;">
       <l-map style="height: 100%; width: 100%" :zoom="zoom" :center="center">
         <l-tile-layer :url="url" />
         <l-marker
@@ -29,13 +29,13 @@
   
       const fetchPlaces = async () => {
         try {
-          const response = await axios.get('URL_DE_LA_API');
-          places.value = response.data.results.map(place => ({
-            id: place.id,
-            lat: place.geometry.location.lat,
-            lng: place.geometry.location.lng,
-            name: place.name
-          }));
+          // const response = await axios.get('URL_DE_LA_API');
+          // places.value = response.data.results.map(place => ({
+          //   id: place.id,
+          //   lat: place.geometry.location.lat,
+          //   lng: place.geometry.location.lng,
+          //   name: place.name
+          // }));
         } catch (error) {
           console.error('Error fetching places:', error);
         }

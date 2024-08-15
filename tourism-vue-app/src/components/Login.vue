@@ -22,11 +22,12 @@
         name="password"
         id="password"
         class="form-control"
+        v-model="password"
         placeholder="Password"
         required
       />
 
-      <button type="submit" class="btn btn-primary btn-sm">Login</button>
+      <button type="submit" class="w-full my-4 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">Login</button>
       <p>
         ¿No tienes cuenta?
         <router-link to="/register">Regístrate aquí</router-link>
@@ -37,26 +38,28 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { useStore } from "vuex";
+// import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import { apiLogin } from "@/services/auth";
 
 export default defineComponent({
   setup() {
     const userName = ref("");
     const password = ref("");
-    const store = useStore();
+    // const store = useStore();
     const router = useRouter();
 
     const handleLogin = async () => {
       try {
-        // const user = await 
-        await store.dispatch("auth/login", {
-          userName: userName.value,
-          password: password.value,
-        });
-        router.push("/");
+        const result = await apiLogin(userName.value, password.value);
+        if (!result.success) {
+          throw new Error("Error al iniciar sesión");
+        }
+        // store.commit("setUser", result.data);
+        router.push("/tourism");
+
       } catch (error) {
-        alert("Login failed");
+        alert("Error al iniciar sesión");
       }
     };
 
