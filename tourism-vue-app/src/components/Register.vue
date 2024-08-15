@@ -10,8 +10,8 @@
       <input v-model="name" type="text" name="name" id="name" class="form-control" placeholder="Nombre" required />
       <label for="lastName" style="font-weight: bold">Apellido:</label>
       <input v-model="lastName" type="text" name="lastName" id="lastName" class="form-control" placeholder="Apellido" required />
-      <label for="userName" style="font-weight: bold">Usuario:</label>
-      <input v-model="userName" type="text" name="userName" id="userName" class="form-control" placeholder="Usuario" required />
+      <label for="username" style="font-weight: bold">Usuario:</label>
+      <input v-model="username" type="text" name="username" id="username" class="form-control" placeholder="Usuario" required />
       <label for="password" style="font-weight: bold">Password:</label>
       <input
         v-model="password"
@@ -32,7 +32,7 @@
         placeholder="Confirmar Password"
         required
       />
-      <button type="submit">Register</button>
+      <button type="submit" class="w-full my-4 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">Register</button>
       <p>
         ¿Ya tienes una cuenta?
         <router-link to="/login">Logueate aquí</router-link>
@@ -45,13 +45,14 @@
 import { defineComponent, ref } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import { apiRegister } from "@/services/auth";
 
 export default defineComponent({
   setup() {
 
     const name = ref("");
     const lastName = ref("");
-    const userName = ref("");
+    const username = ref("");
     const password = ref("");
     const confirmPassword = ref("");
 
@@ -60,24 +61,29 @@ export default defineComponent({
 
     const handleRegister = async () => {
       if (password.value !== confirmPassword.value) {
-        alert('Passwords do not match');
+        alert('Las contraseñas no coinciden');
         return;
       }
 
       try {
-        // Aquí harías la lógica para registrar el usuario
-        // Simulación de un registro exitoso, luego logueo
-        await store.dispatch('auth/login', { userName: userName.value, password: password.value });
-        router.push('/');
+        const user = {
+          names: name.value,
+          lastnames: lastName.value,
+          username: username.value,
+          password: password.value,
+        };
+        const result = await apiRegister(user);        
+        // await store.dispatch('auth/login', { username: username.value, password: password.value });
+        router.push('/tourism');
       } catch (error) {
-        alert('Registration failed');
+        alert('Error al registrar usuario');
       }
     };
 
     return {
       name,
       lastName,
-      userName,
+      username,
       password,
       confirmPassword,
       handleRegister,
