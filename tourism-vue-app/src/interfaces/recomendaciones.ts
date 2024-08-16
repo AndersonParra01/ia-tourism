@@ -1,22 +1,20 @@
-interface RecomendacionesCards {
+export interface RecomendacionesCards {
     ciudad: string,
     gasto: string,
     tiempo: string,
     descripcion: string
 }
 
-interface CiudadInfo {
+export interface CiudadInfo {
     ciudad?: string;
-    gasto?: {
-      transporte?: string[];
-      hotel?: string;
-      comida?: string;
-      documentacion?: string;
-    };
+    transporte?: string[];
+    hotel?: string;
+    comida?: string;
+    documentacion?: string;
     duracion?: string;
     descripcion?: string;
     lugares?: string[];
-    transporte?: string;
+    transp_local?: string;
     clima?: string;
     seguridad?: string;
     idioma?: string;
@@ -43,4 +41,34 @@ interface CiudadInfo {
     trans_publico?: string;
     trans_privado?: string;
     trans_turistico?: string;
-  }
+}
+
+export interface GeoSearch {
+    primary:     Ary;
+    secondary:   Ary;
+    type:        string;
+    isContainer: boolean;
+    distance:    Distance;
+    countryCode: string;
+}
+
+export interface Distance {
+    units:       string;
+    measurement: number;
+    type:        string;
+    geometry:    Geometry;
+}
+
+export interface Geometry {
+    centre: Centre;
+}
+
+export interface Centre {
+    lat: number;
+    lon: number;
+}
+
+export interface Ary {
+    text:       string;
+    highlights: number[];
+}
