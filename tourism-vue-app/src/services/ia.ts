@@ -1,3 +1,4 @@
+import { RecomendacionesCards, CiudadInfo, GeoSearch } from "@/interfaces/recomendaciones";
 import axios from "axios";
 import { OpenAI } from "openai";
 
@@ -75,15 +76,14 @@ export async function getEspecificCityData(origen: string, destino: string): Pro
                   *Baja*=> el campo es opcional y solo se presenta si hay tokens disponibles despues de que los demas campos de importancia Alta y Media ya hayan sido definidos, en caso de que los demas campos hayan ocupado mas informacion los de importancia Baja no se presentan.
                   A continuacion los campos que enviaras: 
                   *Alta*(ciudad)=Sera un string del Nombre de la ciudad, 
-                  *Alta*(gasto)=Sera un arreglo de varios tipos en donde enviaras todos los tipos de gastos el cual incluira, colocar la moneda de la ciudad de origen: 
-                    [transporte]=arreglo de strings de presupuesto en transporte en bus, avion y carro propio para dirigirse a la ciudad destino, incluir detalles del precio y tiempo de viaje. En caso de que uno de los valores no sea factible poner: No es factible, incluir detalle de si es de ida y vuelta o solo de ida. Si tienes la informacion de donde se toma el transporte o la compañia que ofrece el servicio incluirlo,
-                    [hotel]=gasto en hotel o estadia incluir precios de hoteles de 2 a 5 estrellas, 
-                    [comida]=gasto en comida dependiendo del tiempo de estadia, incluye detalles como desayuno, almuerzo y cena,
-                    [documentacion]=En caso de que se necesite algun tipo de documentacion para ingresar a la ciudad como pasaporte, visa, etc incluir el gasto segun el pais de la ciudad de origen,
+                  *Alta*(transporte)=arreglo de strings de presupuesto en transporte en bus, avion y carro propio para dirigirse a la ciudad destino, incluir detalles del precio y tiempo de viaje. En caso de que uno de los valores no sea factible poner: No es factible, calcular valores del viaje de solo de ida. Si tienes la informacion de donde se toma el transporte o la compañia que ofrece el servicio incluirlo,
+                  *Alta*(hotel)=gasto en hotel o estadia incluir precios de hoteles de 2 a 5 estrellas, 
+                  *Alta*(comida)=gasto en comida dependiendo del tiempo de estadia, incluye detalles como desayuno, almuerzo y cena,
+                  *Alta*(documentacion)=En caso de que se necesite algun tipo de documentacion para ingresar a la ciudad como pasaporte, visa, etc incluir el gasto segun el pais de la ciudad de origen,
                   *Alta*(duracion)=sera un string en donde muestras el tiempo recomendado de estadía y tambien recomendarias las mejores temporadas puedes incluir mas datos sobre este tema, tambien incluye en tiempo de viaje y desglosalo por el tipo de transporte, 
                   *Alta*(descripcion)=Sera un string y aqui describiras la ciudad y su importancia turistica y demas datos que interesaria a un usuario en busca de un viaje, 
                   *Alta*(lugares)=Sera un arreglo de strings en donde listaras todos los lugares a visitar y actividades a realizar.
-                  *Media*(transporte)=Sera un string en donde se muestra las opciones de transporte disponibles en la ciudad (metro, autobús, taxi, etc.) y el precio que estos tienen, mostrar ultimos precios y la fecha de estos registros,
+                  *Media*(transp_local)=Sera un string en donde se muestra las opciones de transporte disponibles en la ciudad (metro, autobús, taxi, etc.) y el precio que estos tienen, mostrar ultimos precios y la fecha de estos registros,
                   *Alta*(clima)=string en donde se muestra el clima de la ciudad y las mejores temporadas para visitarla,
                   *Media*(seguridad)=string en donde se muestra la seguridad de la ciudad y recomendaciones para los turistas,
                   *Media*(idioma)=string en donde se muestra el idioma oficial de la ciudad y otros idiomas comunes,
@@ -141,3 +141,34 @@ export async function getEspecificCityData(origen: string, destino: string): Pro
   return resultado;
 }
 
+export async function fetchCities(cityName: string) {
+  let citiesList: string[] = [];
+  
+  if (cityName.length < 4) {
+    return citiesList;
+  }
+
+  try {
+    const response = await axios.get<GeoSearch[]>('https://api.swiftcomplete.com/v1/places/', {
+      params: {
+        key: process.env.VUE_APP_GEO_CITIES, // Clave de API
+        text: cityName, // Texto de búsqueda
+        biasTowards: '51.50532341149335,-0.087890625', // Coordenadas para el sesgo de ubicación
+        resultOrdering: 'location_biasing', // Orden de los resultados
+        maxResults: 5, // Número máximo de resultados
+      },
+    });
+
+    // Extraer solo los nombres de las ciudades de los resultados
+    citiesList = response.data.map(result => result.primary.text +', '+ result.secondary.text);
+
+    // Eliminar duplicados y valores nulos
+    citiesList = [...new Set(citiesList.filter(city => city))];
+    
+  } catch (error) {
+    citiesList = [];
+    console.error('Error al obtener los datos:', error);
+  }
+
+  return citiesList;
+}

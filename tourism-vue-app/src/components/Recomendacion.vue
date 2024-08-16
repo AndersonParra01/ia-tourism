@@ -1,9 +1,25 @@
 <template>
     <div class="container">
       <!-- Campos de Texto -->
-      <div class="input-container">
-        <input v-model="origen" placeholder="Origen" />
-        <input v-model="destino" placeholder="Destino" />
+      <div class="autocomplete-container">
+        <div>
+          <input v-model="origen" @input="fetchCitiesO" placeholder="Origen" autocomplete="off"/>
+          <!-- Lista de Sugerencias -->
+          <ul v-if="citiesO.length" class="autocomplete-list">
+            <li v-for="(city, index) in citiesO" :key="index" @click="selectOrigen(city)">
+              {{ city }}
+            </li>
+          </ul>
+        </div>
+        <div>
+          <input v-model="destino" @input="fetchCitiesD" placeholder="Destino" autocomplete="off"/>
+          <!-- Lista de Sugerencias -->
+          <ul v-if="citiesD.length" class="autocomplete-list">
+            <li v-for="(city, index) in citiesD" :key="index" @click="selectDestino(city)">
+              {{ city }}
+            </li>
+          </ul>
+        </div>
         <button @click="getPlaces" class="styled-button">Buscar</button>
       </div>
   
@@ -25,56 +41,53 @@
         </div>
       </div>
 
-      <div v-if="showModal" class="modal">
-      <div class="modal-content">
-        <span class="close" @click="closeModal">&times;</span>
-        <h3>{{ selectedCard.ciudad }}</h3>
-        <div class="details">
-          <div>
-            <p v-if="selectedCard.gasto">Gastos:</p>
-            <div v-if="selectedCard.gasto">
-              <div v-for="(value, key) in selectedCard.gasto" :key="key">
-                <p>{{ key }}:</p>
-                <ul v-if="Array.isArray(value)">
-                  <li v-for="item in value" :key="item">{{ item }}</li>
-                </ul>
-                <p v-else>{{ value }}</p>
-              </div>
+      <div v-if="showModal" class="modal" @click="handleClickOutside">
+        <div class="modal-content" @click.stop>
+          <button class="close" @click="closeModal">&times;</button>
+          <h3>{{ selectedCard.ciudad }}</h3>
+          <div class="details">
+            <div v-if="selectedCard.transporte">
+              <p><b>Gasto en transporte: </b></p>
+              <ul>
+                <li v-for="item in selectedCard.transporte" :key="item">{{ item }}</li>
+              </ul>
             </div>
+            <p v-if="selectedCard.hotel"><b>Gastos Hospedaje:</b> {{ selectedCard.hotel }}</p>
+            <p v-if="selectedCard.comida"><b>Gasto en comidas:</b> {{ selectedCard.comida }}</p>
+            <p v-if="selectedCard.documentacion"><b>Documentación necesaria:</b> {{ selectedCard.documentacion }}</p>
+            <p v-if="selectedCard.duracion"><b>Duración de viaje:</b> {{ selectedCard.duracion }}</p>
+            <p v-if="selectedCard.descripcion"><b>Descripción:</b> {{ selectedCard.descripcion }}</p>
+            <p v-if="selectedCard.lugares"><b>Lugares:</b> {{ selectedCard.lugares.join(', ') }}</p>
+            <p v-if="selectedCard.transp_local"><b>Transporte Local:</b> {{ selectedCard.transp_local }}</p>
+            <p v-if="selectedCard.clima"><b>Clima:</b> {{ selectedCard.clima }}</p>
+            <p v-if="selectedCard.seguridad"><b>Seguridad:</b> {{ selectedCard.seguridad }}</p>
+            <p v-if="selectedCard.idioma"><b>Idioma:</b> {{ selectedCard.idioma }}</p>
+            <p v-if="selectedCard.moneda"><b>Moneda:</b> {{ selectedCard.moneda }}</p>
+            <p v-if="selectedCard.costumbres"><b>Costumbres:</b> {{ selectedCard.costumbres }}</p>
+            <p v-if="selectedCard.gastronomia"><b>Gastronomía:</b> {{ selectedCard.gastronomia }}</p>
+            <p v-if="selectedCard.cultura"><b>Cultura:</b> {{ selectedCard.cultura }}</p>
+            <p v-if="selectedCard.historia"><b>Historia:</b> {{ selectedCard.historia }}</p>
+            <p v-if="selectedCard.turismo"><b>Turismo:</b> {{ selectedCard.turismo }}</p>
+            <p v-if="selectedCard.compras"><b>Compras:</b> {{ selectedCard.compras }}</p>
+            <p v-if="selectedCard.vida_nocturna"><b>Vida Nocturna:</b> {{ selectedCard.vida_nocturna }}</p>
+            <p v-if="selectedCard.transporte_local">Transporte <b>Local:</b> {{ selectedCard.transporte_local }}</p>
+            <p v-if="selectedCard.alojamiento"><b>Alojamiento:</b> {{ selectedCard.alojamiento }}</p>
+            <p v-if="selectedCard.restaurantes"><b>Restaurantes:</b> {{ selectedCard.restaurantes }}</p>
+            <p v-if="selectedCard.actividades"><b>Actividades:</b> {{ selectedCard.actividades }}</p>
+            <p v-if="selectedCard.consejos"><b>Consejos:</b> {{ selectedCard.consejos }}</p>
+            <p v-if="selectedCard.emergencias"><b>Emergencias:</b> {{ selectedCard.emergencias }}</p>
+            <p v-if="selectedCard.telefono"><b>Teléfono:</b> {{ selectedCard.telefono }}</p>
+            <p v-if="selectedCard.salud"><b>Salud:</b> {{ selectedCard.salud }}</p>
+            <p v-if="selectedCard.seguro"><b>Seguro:</b> {{ selectedCard.seguro }}</p>
+            <p v-if="selectedCard.comunicacion"><b>Comunicación:</b> {{ selectedCard.comunicacion }}</p>
           </div>
-          <p v-if="selectedCard.duracion">Duración: {{ selectedCard.duracion }}</p>
-          <p v-if="selectedCard.descripcion">Descripción: {{ selectedCard.descripcion }}</p>
-          <p v-if="selectedCard.lugares">Lugares: {{ selectedCard.lugares.join(', ') }}</p>
-          <p v-if="selectedCard.transporte">Transporte: {{ selectedCard.transporte }}</p>
-          <p v-if="selectedCard.clima">Clima: {{ selectedCard.clima }}</p>
-          <p v-if="selectedCard.seguridad">Seguridad: {{ selectedCard.seguridad }}</p>
-          <p v-if="selectedCard.idioma">Idioma: {{ selectedCard.idioma }}</p>
-          <p v-if="selectedCard.moneda">Moneda: {{ selectedCard.moneda }}</p>
-          <p v-if="selectedCard.costumbres">Costumbres: {{ selectedCard.costumbres }}</p>
-          <p v-if="selectedCard.gastronomia">Gastronomía: {{ selectedCard.gastronomia }}</p>
-          <p v-if="selectedCard.cultura">Cultura: {{ selectedCard.cultura }}</p>
-          <p v-if="selectedCard.historia">Historia: {{ selectedCard.historia }}</p>
-          <p v-if="selectedCard.turismo">Turismo: {{ selectedCard.turismo }}</p>
-          <p v-if="selectedCard.compras">Compras: {{ selectedCard.compras }}</p>
-          <p v-if="selectedCard.vida_nocturna">Vida Nocturna: {{ selectedCard.vida_nocturna }}</p>
-          <p v-if="selectedCard.transporte_local">Transporte Local: {{ selectedCard.transporte_local }}</p>
-          <p v-if="selectedCard.alojamiento">Alojamiento: {{ selectedCard.alojamiento }}</p>
-          <p v-if="selectedCard.restaurantes">Restaurantes: {{ selectedCard.restaurantes }}</p>
-          <p v-if="selectedCard.actividades">Actividades: {{ selectedCard.actividades }}</p>
-          <p v-if="selectedCard.consejos">Consejos: {{ selectedCard.consejos }}</p>
-          <p v-if="selectedCard.emergencias">Emergencias: {{ selectedCard.emergencias }}</p>
-          <p v-if="selectedCard.telefono">Teléfono: {{ selectedCard.telefono }}</p>
-          <p v-if="selectedCard.salud">Salud: {{ selectedCard.salud }}</p>
-          <p v-if="selectedCard.seguro">Seguro: {{ selectedCard.seguro }}</p>
-          <p v-if="selectedCard.comunicacion">Comunicación: {{ selectedCard.comunicacion }}</p>
         </div>
       </div>
     </div>
-    </div>
-  </template>
+</template>
   
-  <script>
-  import { getTouristPlaces, getEspecificCityData } from '../services/ia';
+<script>
+  import { getTouristPlaces, getEspecificCityData, fetchCities } from '../services/ia';
 
   export default {
     data() {
@@ -87,7 +100,9 @@
         card: [],
         loading: false,
         showModal: false,
-        selectedCard: {}
+        selectedCard: {},
+        citiesO: [],
+        citiesD: [],
       };
     },
     methods: {
@@ -96,7 +111,14 @@
           this.showModal = true;
         },
         closeModal() {
+          console.log('Cerrando modal'); 
           this.showModal = false;
+        },
+        handleClickOutside(event) {
+        // Cierra el modal si el clic ocurre fuera del contenido del modal
+          if (event.target === event.currentTarget) {
+              this.closeModal();
+          }
         },
         async getPlaces() {  
           this.loading = true;     
@@ -107,6 +129,7 @@
               }
 
               if(this.origen !== '' && this.destino !== '') {
+                console.log('Destino:', this.destino);
                 const modalData = await getEspecificCityData(this.origen, this.destino);
                 this.openModal(modalData);
                 return;
@@ -115,16 +138,32 @@
               const places = await getTouristPlaces(this.origen);
               this.cards = places;
             } catch (error) {
-                console.error('Error al obtener datos de la API:', error);
+                console.error('Hubo un error:', error);
             } finally {
                 this.loading = false;
             }
         },
+        async fetchCitiesO() {
+          this.citiesO = await fetchCities(this.origen);
+        },
+        async fetchCitiesD() {
+          this.citiesD = await fetchCities(this.destino);
+        },
+        selectOrigen(city) {
+          console.log('origen',city);
+          this.origen = city;
+          this.citiesO = []; // Limpia las sugerencias después de seleccionar
+        },
+        selectDestino(city) {
+          console.log('destino',city);
+          this.destino = city;
+          this.citiesD = []; // Limpia las sugerencias después de seleccionar
+        },
     },
   };
-  </script>
+</script>
   
-  <style scoped>
+<style scoped>
   .container {
     display: flex;
     flex-direction: column;
@@ -209,69 +248,118 @@
   }
 
   .modal {
-  display: flex;
+  display: flex; /* Asegúrate de que esté visible */
   justify-content: center;
   align-items: center;
   position: fixed;
-  z-index: 1;
+  z-index: 1000; /* Aumenta el z-index para que esté encima de otros elementos */
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.5);
-}
+  opacity: 1; /* Asegura la opacidad */
+  transition: opacity 0.3s ease-in-out; /* Transición suave */
+  }
 
-.modal-content {
-  background-color: #fefefe;
-  margin: auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-  max-width: 600px;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
+  .modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    opacity: 1; /* Asegura la opacidad */
+    transition: opacity 0.3s ease-in-out;
+    pointer-events: auto; 
+    z-index: 1001;
+    position: relative;
+  }
 
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    pointer-events: auto; 
+    z-index: 1002;
+  }
 
-.close:hover,
-.close:focus {
-  color: #000;
-  text-decoration: none;
-  cursor: pointer;
-}
+  .close:hover,
+  .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+  }
 
-h3 {
-  color: #333;
-  font-size: 24px;
-  margin-bottom: 10px;
-}
+  h3 {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
 
-ul {
-  list-style-type: none;
-  padding: 0;
-}
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
 
-li {
-  color: #666;
-  font-size: 16px;
-  margin: 5px 0;
-}
+  li {
+    color: #666;
+    font-size: 16px;
+    margin: 5px 0;
+  }
 
-.details p {
-  color: #666;
-  font-size: 16px;
-  margin: 5px 0;
-}
+  .details p {
+    color: #666;
+    font-size: 16px;
+    margin: 5px 0;
+  }
 
-.details span {
-  margin-right: 5px;
-}
-  </style>
+  .details span {
+    margin-right: 5px;
+  }
+
+  .autocomplete-container {
+    position: relative;
+    display: flex;
+    gap: 20px;
+    width: 45%; /* Ancho del contenedor del input */
+  }
+
+  input {
+    padding: 10px;
+    border-radius: 8px;
+    border: 2px solid #ccc;
+    font-size: 1.1em;
+    width: 100%; /* El input ocupa todo el ancho del contenedor */
+  }
+
+  .autocomplete-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 150px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 0 0 8px 8px;
+    overflow-y: auto;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    z-index: 1000;
+  }
+
+  .autocomplete-list li {
+    padding: 10px;
+    cursor: pointer;
+  }
+
+  .autocomplete-list li:hover {
+    background-color: #f0f0f0;
+  }
+</style>
   
