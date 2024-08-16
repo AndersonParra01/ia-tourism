@@ -3,6 +3,7 @@ import Login from "../components/Login.vue";
 import Register from "../components/Register.vue";
 import Map from "../components/Map.vue";
 import Tourism from "@/components/tourism.vue";
+import Recomendacion from "@/components/Recomendacion.vue";
 
 const routes = [
   {
@@ -28,6 +29,11 @@ const routes = [
     path: "/tourism",
     name: "Tourism",
     component: Tourism,
+  },
+  {
+    path: "/recomendaciones",
+    name: "Recomendacion",
+    component: Recomendacion,
   },
 ];
 
