@@ -88,6 +88,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 import { apiPlaceCreate } from "@/services/place";
+import { fetchUserPlace } from "@/services/user";
 
 export default defineComponent({
     name: "PlaceDetails",
@@ -107,8 +108,22 @@ export default defineComponent({
     },
     methods: {
         async saveConsult() {
+            const user = localStorage.getItem("user");
+            if (!user) {
+                alert("Debes iniciar sesión para guardar la consulta");
+                return;
+            }
             try {
-                const newPlace = await apiPlaceCreate(this.place);
+                console.log('LUGAR', this.place);
+                const placeData = { ...this.place };
+                console.log('DATA A ENVIAR DEL HIJO', placeData);
+                const newPlace = await apiPlaceCreate(placeData);
+                console.log(newPlace);
+                const user = JSON.parse(localStorage.getItem("user")!);
+                console.log('USER', user);
+                console.log(user.id, newPlace.id);
+                const newUserPlace = await fetchUserPlace(user.id, newPlace.id);
+                console.log('final', newUserPlace);
             } catch (error) {
                 alert("Error al registrar historial");
                 return;

@@ -6,21 +6,19 @@ from user.serializers import UserSerializer
 class TouristPlaceListSerializer(serializers.ModelSerializer):
     class Meta:
         model = TouristPlace
-        fields = ['id', 'typical_food', 'languages', 'traditional_music', 'city_tourist_map', 'map_of_tourist_places_in_ecuador', 'hotels', 'regions']
+        fields = ['id', 'description_place', 'typical_food', 'languages', 'traditional_music', 'city_tourist_map', 'map_of_tourist_places_in_ecuador', 'hotels', 'regions']
 
 class TouristPlaceDetailWriteSerializer(serializers.ModelSerializer):
     users = serializers.PrimaryKeyRelatedField(many=True, queryset=CustomUser.objects.all())
 
     class Meta:
         model = TouristPlace
-        fields = ['id', 'typical_food', 'languages', 'traditional_music', 'city_tourist_map', 'map_of_tourist_places_in_ecuador', 'hotels', 'regions', 'users']
+        fields = ['id', 'description_place', 'typical_food', 'languages', 'traditional_music', 'city_tourist_map', 'map_of_tourist_places_in_ecuador', 'hotels', 'regions', 'users']
 
     def create(self, validated_data):
-        # Extraemos los usuarios del validated_data
+        print('validated_data:', validated_data)
         users_data = validated_data.pop('users', [])
-        # Creamos el lugar turístico con los datos restantes
         place = TouristPlace.objects.create(**validated_data)
-        # Asignamos los usuarios al lugar
         place.users.set(users_data)
         return place
     
@@ -38,33 +36,9 @@ class TouristPlaceDetailWriteSerializer(serializers.ModelSerializer):
             instance.users.set(validated_data['users'])
 
         return instance
-    class Meta:
-        model = TouristPlace
-        fields = ['id', 'name', 'description', 'image', 'location', 'users']
-
-    def create(self, validated_data):
-        # Extraemos la lista de usuarios de los datos validados
-        users_data = validated_data.pop('users', [])
-        # Creamos el lugar turístico con los datos restantes
-        place = TouristPlace.objects.create(**validated_data)
-        # Asignamos los usuarios al lugar turístico
-        place.users.set(users_data)
-        return place
-    
-    def update(self, instance, validated_data):
-        instance.name = validated_data.get('name', instance.name)
-        instance.description = validated_data.get('description', instance.description)
-        instance.image = validated_data.get('image', instance.image)
-        instance.location = validated_data.get('location', instance.location)
-        instance.save()
-
-        if 'users' in validated_data:
-            instance.users.set(validated_data['users'])
-
-        return instance
 
 class TouristPlaceReadSerializer(serializers.ModelSerializer):
     users = UserSerializer(many=True, read_only=True)
     class Meta:
         model = TouristPlace
-        fields = ['id', 'typical_food', 'languages', 'traditional_music', 'city_tourist_map', 'map_of_tourist_places_in_ecuador', 'hotels', 'regions', 'users']
+        fields = ['id', 'description_place', 'typical_food', 'languages', 'traditional_music', 'city_tourist_map', 'map_of_tourist_places_in_ecuador', 'hotels', 'regions', 'users']
