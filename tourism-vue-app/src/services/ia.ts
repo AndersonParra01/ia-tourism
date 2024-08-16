@@ -7,7 +7,11 @@ export interface Place {
   traditionalMusic: string;
   regions: string;
 }
-import { RecomendacionesCards, CiudadInfo, GeoSearch } from "@/interfaces/recomendaciones";
+import {
+  RecomendacionesCards,
+  CiudadInfo,
+  GeoSearch,
+} from "@/interfaces/recomendaciones";
 import axios from "axios";
 import { OpenAI } from "openai";
 
@@ -52,24 +56,27 @@ export const getCompletion = async (prompt: string): Promise<Place> => {
   }
 };
 
-export async function getTouristPlaces(origen: string): Promise<RecomendacionesCards> {
+export async function getTouristPlaces(
+  origen: string
+): Promise<RecomendacionesCards> {
   let openai = new OpenAI({
     apiKey: process.env.VUE_APP_CHAT_GPT_KEY,
-    dangerouslyAllowBrowser: true
+    dangerouslyAllowBrowser: true,
   });
-  
+
   const completion = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
-      { 
-        role: "system", 
+      {
+        role: "system",
         content: `Tu eres un asistente turistico que das recomendaciones de lugares turísticos en donde el usuario te mandara un nombre de una ciudad de origen o inicio y debes recomendar al menos 6 ciudades a las cuales es recomendable viajar desde la ciudad origen. 
                   Debes proporcionar un string de un arreglo de objetos json en este formato [{}, {}, {}], nada mas que eso lista para aplicar un JSON.parse 
                   con los siguientes campos: ciudad, gasto aproximado en dolares, tiempo recomendado de estadía, y una pequeña descripción. Los nombres de las variables en el json son asi: ciudad, gasto, tiempo y descripcion respectivamente.
-                  El string no debe llevar nada de espacios ni saltos de linea, Asegúrate de que sea un JSON bien formado. Y asegurate de no pasar de mas de 900 tokens. Si no recibes ningun nombre de ninguna ciudad devuelve un arreglo vacio` },
+                  El string no debe llevar nada de espacios ni saltos de linea, Asegúrate de que sea un JSON bien formado. Y asegurate de no pasar de mas de 900 tokens. Si no recibes ningun nombre de ninguna ciudad devuelve un arreglo vacio`,
+      },
       {
         role: "user",
-        content: 'Guayaquil'
+        content: "Guayaquil",
       },
       {
         role: "assistant",
@@ -81,27 +88,34 @@ export async function getTouristPlaces(origen: string): Promise<RecomendacionesC
       },
     ],
     max_tokens: 900,
-    temperature: 0.7
+    temperature: 0.7,
   });
 
   console.log(completion);
-  const data = JSON.parse(completion.choices[0].message.content?.trim() ? completion.choices[0].message.content : "[]");
+  const data = JSON.parse(
+    completion.choices[0].message.content?.trim()
+      ? completion.choices[0].message.content
+      : "[]"
+  );
   console.log(data);
 
   return data;
 }
 
-export async function getEspecificCityData(origen: string, destino: string): Promise<CiudadInfo> {
+export async function getEspecificCityData(
+  origen: string,
+  destino: string
+): Promise<CiudadInfo> {
   let openai = new OpenAI({
     apiKey: process.env.VUE_APP_CHAT_GPT_KEY,
-    dangerouslyAllowBrowser: true
+    dangerouslyAllowBrowser: true,
   });
-  
+
   const completion = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
-      { 
-        role: "system", 
+      {
+        role: "system",
         content: `Tu eres un asistente turistico que das recomendaciones de lugares turísticos en donde el usuario te mandara un nombre de una ciudad de origen o inicio y de una ciudad destino. 
                   Como asistente debes proporcionar toda la informacion turistica que existe en la ciudad de destino. Pero tambien es necesario saber la ciudad de origen para poder dar una recomendacion mas precisa sobre los precios, tiempos y lugares de paso.
                   Tu respuesta sera un string de un arreglo de objetos json en este formato [{}, {}, {}], nada mas que eso lista para aplicar un JSON.parse 
@@ -139,10 +153,11 @@ export async function getEspecificCityData(origen: string, destino: string): Pro
                   En caso de que no consigas informacion de algunos de los campos es preferible de que no envies el campo, recuerda no inventar informacion,
                   Para los casos como restaurantes, hoteles, lugares de compras es preferible que listes los nombres especificos.
                   Retornas solo un objeto json con los campos anteriores, no un arreglo de objetos json
-                  El usuario te enviara la informacion de esta manera Origen,Destino` },
+                  El usuario te enviara la informacion de esta manera Origen,Destino`,
+      },
       {
         role: "user",
-        content: 'Guayaquil,Cuenca'
+        content: "Guayaquil,Cuenca",
       },
       {
         role: "assistant",
@@ -154,18 +169,22 @@ export async function getEspecificCityData(origen: string, destino: string): Pro
       },
     ],
     max_tokens: 4000,
-    temperature: 0.7
+    temperature: 0.7,
   });
 
   console.log(completion);
-  const data = JSON.parse(completion.choices[0].message.content?.trim() ? completion.choices[0].message.content : "[]");
-  
+  const data = JSON.parse(
+    completion.choices[0].message.content?.trim()
+      ? completion.choices[0].message.content
+      : "[]"
+  );
+
   let resultado: any;
-  
+
   if (Array.isArray(data)) {
     // If data is an array, select the first object
     resultado = data.length > 0 ? data[0] : null;
-  } else if (typeof data === 'object' && data !== null) {
+  } else if (typeof data === "object" && data !== null) {
     // If data is an object, save it directly
     resultado = data;
   } else {
@@ -179,31 +198,35 @@ export async function getEspecificCityData(origen: string, destino: string): Pro
 
 export async function fetchCities(cityName: string) {
   let citiesList: string[] = [];
-  
+
   if (cityName.length < 4) {
     return citiesList;
   }
 
   try {
-    const response = await axios.get<GeoSearch[]>('https://api.swiftcomplete.com/v1/places/', {
-      params: {
-        key: process.env.VUE_APP_GEO_CITIES, // Clave de API
-        text: cityName, // Texto de búsqueda
-        biasTowards: '51.50532341149335,-0.087890625', // Coordenadas para el sesgo de ubicación
-        resultOrdering: 'location_biasing', // Orden de los resultados
-        maxResults: 5, // Número máximo de resultados
-      },
-    });
+    const response = await axios.get<GeoSearch[]>(
+      "https://api.swiftcomplete.com/v1/places/",
+      {
+        params: {
+          key: process.env.VUE_APP_GEO_CITIES, // Clave de API
+          text: cityName, // Texto de búsqueda
+          biasTowards: "51.50532341149335,-0.087890625", // Coordenadas para el sesgo de ubicación
+          resultOrdering: "location_biasing", // Orden de los resultados
+          maxResults: 5, // Número máximo de resultados
+        },
+      }
+    );
 
     // Extraer solo los nombres de las ciudades de los resultados
-    citiesList = response.data.map(result => result.primary.text +', '+ result.secondary.text);
+    citiesList = response.data.map(
+      (result) => result.primary.text + ", " + result.secondary.text
+    );
 
     // Eliminar duplicados y valores nulos
-    citiesList = [...new Set(citiesList.filter(city => city))];
-    
+    citiesList = [...new Set(citiesList.filter((city) => city))];
   } catch (error) {
     citiesList = [];
-    console.error('Error al obtener los datos:', error);
+    console.error("Error al obtener los datos:", error);
   }
 
   return citiesList;

@@ -114,8 +114,21 @@ def login(request):
     username = request.data.get('username')
     password = request.data.get('password')
     user = authenticate(username=username, password=password)
-    if user is not None:
-        return Response({"message": "Login successful", "success": True, }, status=200)
-    else:
-        return Response({"message": "Invalid username or password", "success": False}, status=200)
 
+    if user is not None:
+        user_data = {
+            "id": user.id,
+            "username": user.username,
+            "names": user.names,
+            "lastnames": user.lastnames,
+        }
+        return Response({
+            "message": "Login successful",
+            "success": True,
+            "user": user_data
+        }, status=200)
+    else:
+        return Response({
+            "message": "Invalid username or password",
+            "success": False
+        }, status=200)
