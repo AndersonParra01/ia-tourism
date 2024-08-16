@@ -33,7 +33,7 @@
       <!-- Cards Dinámicas -->
       <div v-if="loading">Cargando...</div>
       <div v-else class="cards-container">
-        <div v-for="card in cards" :key="card.ciudad" class="card" @click="openModal(card)">
+        <div v-for="card in cards" :key="card.ciudad" class="card" @click="getPlaceFromRecommendation(card)" :class="{ disabled: globalClicked }">
           <h3>{{ card.ciudad }}</h3>
           <p>Gasto: {{ card.gasto }}</p>
           <p>Tiempo: {{ card.tiempo }}</p>
@@ -103,10 +103,11 @@
         selectedCard: {},
         citiesO: [],
         citiesD: [],
+        globalClicked: false,
       };
     },
     methods: {
-        openModal(card) {
+        async openModal(card) {
           this.selectedCard = card;
           this.showModal = true;
         },
@@ -148,6 +149,24 @@
         },
         async fetchCitiesD() {
           this.citiesD = await fetchCities(this.destino);
+        },
+        async getPlaceFromRecommendation(card) {
+          if(!this.globalClicked)
+          {
+            this.loading = true; 
+            this.globalClicked = true;    
+            try {
+              const modalData = await getEspecificCityData(this.origen, card.ciudad);
+              console.log('Modal Data:', modalData);
+              this.openModal(modalData);
+              return;
+            } catch (error) {
+                console.error('Hubo un error:', error);
+            } finally {
+                this.loading = false;
+                this.globalClicked = false;
+            }
+          }
         },
         selectOrigen(city) {
           console.log('origen',city);
@@ -361,5 +380,6 @@
   .autocomplete-list li:hover {
     background-color: #f0f0f0;
   }
+
 </style>
   
