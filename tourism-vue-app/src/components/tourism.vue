@@ -1,35 +1,35 @@
 <template>
-    <div class="m-4 mx-auto p-3">
-        <h1 class="text-2xl font-bold mb-4">
+    <div class="mt-2 p-8 bg-white shadow-md rounded-lg">
+        <h1 class="text-3xl font-bold mb-6 text-center text-blue-700">
             OpenAI Asistente de Turismo Virtual Ec
         </h1>
-        <div>
-            <label for="language">Seleccione su idioma:</label>
-            <select v-model="language" id="language">
+        <div class="mb-6 text-center">
+            <label for="language" class="text-lg font-semibold text-gray-700">Seleccione su idioma:</label>
+            <select v-model="language" id="language" class="ml-2 p-2 border rounded bg-gray-50">
                 <option value="en">English</option>
                 <option value="es">Spanish</option>
                 <option value="fr">French</option>
             </select>
         </div>
-        <input v-model="prompt" type="text" placeholder="Enter a prompt" class="border rounded p-2 mb-4 w-full"
-            @keydown.enter="send" />
-        <button @click="send" class="bg-blue-500 text-white p-2 rounded">
-            Enviar
-        </button>
-        <p class="mt-4">{{ response }}</p>
-
-        <h3></h3>
-
-        <div class="flex space-x-4 mt-4">
-            <DynamicText :text="message" class="flex-1" />
-            <DynamicText :text="message2" class="flex-1" />
-            <DynamicText :text="message" class="flex-1" />
-            <DynamicText :text="message2" class="flex-1" />
-            <DynamicText :text="message2" class="flex-1" />
+        <div class="flex justify-center items-center mb-4">
+            <input v-model="prompt" type="text" placeholder="Enter a prompt"
+                class="border border-gray-300 rounded-l p-3 w-full max-w-md" @keydown.enter="send" />
+            <button @click="send" class="bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-r">
+                Enviar
+            </button>
         </div>
-        <Map />
+
+        <div v-if="isLoading" class="flex space-x-4 mt-4">
+            <WaitComponent />
+        </div>
+
+        <PlaceDetails :place="selectedPlace" />
+
+
+
+        <!-- <Map /> -->
         <div v-if="isUserLoggedIn">
-            <button @click="saveConsult" class="bg-blue-500 text-white p-2 rounded">
+            <button @click="saveConsult" class="bg-blue-500 text-white p-2 rounded justify-center">
                 Guardar Consulta
             </button>
         </div>
@@ -46,8 +46,6 @@
                     <button @click="closeModal" class="text-gray-500 hover:text-gray-700 float-right">
                         &times;
                     </button>
-
-                    <!-- Formulario dentro del modal -->
                     <div class="abs-center">
                         <form @submit.prevent="submitForm">
                             <div class="imagenUsuario">
@@ -87,9 +85,11 @@
 import { defineComponent, ref } from "vue";
 import { getCompletion, Place } from "./../services/ia";
 import DynamicText from "./DynamicText.vue";
+import WaitComponent from "./wait.vue";
 import Map from "./Map.vue";
 import { apiRegister } from "@/services/auth";
 import { apiPlaceCreate } from "@/services/place";
+import PlaceDetails from './PlaceDetails.vue';
 
 export default defineComponent({
     setup() {
@@ -99,26 +99,30 @@ export default defineComponent({
         const message = ref("");
         const message2 = ref("");
         let language: "en" | "es" | "fr" = "en";
-
+        const selectedPlace = ref<Place>({
+            name: '',
+            description: '',
+            location: '',
+            typicalFood: "",
+            traditionalMusic: "",
+            image: "",
+            languages: "",
+            regions: ""
+        });
         const send = async () => {
             try {
                 isLoading.value = true;
-                message2.value = "Cargando... enviado";
-                message.value = "Cargando... enviado1";
-
                 const result: Place = await getCompletion(prompt.value);
-
                 console.log('XD', result);
-                // Guarda el resultado en el localStorage
-                localStorage.setItem("place", JSON.stringify(result));
 
+                selectedPlace.value = result;
                 isLoading.value = false;
             } catch (error) {
                 isLoading.value = false;
                 console.error("Error fetching completion:", error);
             }
         };
-        return { prompt, response, send, language, message, message2 };
+        return { prompt, response, send, language, message, message2, isLoading, selectedPlace };
     },
     computed: {
         isUserLoggedIn() {
@@ -130,7 +134,9 @@ export default defineComponent({
     },
     components: {
         DynamicText,
-        Map
+        Map,
+        WaitComponent,
+        PlaceDetails
     },
     data() {
         return {
@@ -200,17 +206,14 @@ export default defineComponent({
 </script>
 
 <style>
-/* Estilos adicionales */
 .modal-bg {
     background-color: rgba(0, 0, 0, 0.75);
-    /* Fondo más opaco */
 }
 
 .abs-center {
     display: flex;
     align-items: center;
     justify-content: center;
-    /* min-height: 100vh; */
 }
 
 form {

@@ -1,4 +1,5 @@
 export interface Place {
+  name: string;
   description: string;
   image: string;
   location: string;
@@ -47,6 +48,7 @@ export const getCompletion = async (prompt: string): Promise<Place> => {
       traditionalMusic:
         result.traditional_music || "Música tradicional no disponible",
       regions: result.regions || "Regiones no disponibles",
+      name: "",
     };
 
     return place;
