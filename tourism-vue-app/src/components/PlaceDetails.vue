@@ -115,13 +115,9 @@ export default defineComponent({
             }
             try {
                 console.log('LUGAR', this.place);
-                const placeData = { ...this.place };
-                console.log('DATA A ENVIAR DEL HIJO', placeData);
-                const newPlace = await apiPlaceCreate(placeData);
+                const newPlace = await apiPlaceCreate(this.place);
                 console.log(newPlace);
                 const user = JSON.parse(localStorage.getItem("user")!);
-                console.log('USER', user);
-                console.log(user.id, newPlace.id);
                 const newUserPlace = await fetchUserPlace(user.id, newPlace.id);
                 console.log('final', newUserPlace);
             } catch (error) {

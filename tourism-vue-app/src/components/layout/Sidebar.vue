@@ -11,7 +11,7 @@
             <ul>
                 <li v-for="place in places" :key="place.id"
                     class="p-4 hover:bg-gray-800 cursor-pointer flex items-center">
-                    {{ place.description_place }}
+                    {{ place.description_place ? place.description_place : 'Lugar en null' }}
                 </li>
             </ul>
         </nav>
