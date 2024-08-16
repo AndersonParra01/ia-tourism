@@ -106,12 +106,15 @@ def getById(request, id):
     return Response(serializer.data)
 
 @api_view(['POST'])
-def create (request):
+def create(request):
     serializer = TouristPlaceDetailWriteSerializer(data=request.data, partial=True)
     if serializer.is_valid():
+        print('validated data:', serializer.validated_data)
         serializer.save()
-        return Response(serializer.data, status= status.HTTP_201_CREATED)
-    return Response(serializer.errors, status= status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+        print('validation errors:', serializer.errors)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
 def update(request, id):

@@ -5,7 +5,7 @@
             <ul>
                 <li v-for="place in places" :key="place.id"
                     class="p-4 hover:bg-gray-800 cursor-pointer flex items-center">
-                    {{ place.name }}
+                    {{ place.description_place }}
                 </li>
             </ul>
         </nav>
