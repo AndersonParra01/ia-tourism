@@ -11,7 +11,8 @@
                 <option value="fr">French</option>
             </select>
         </div>
-        <input v-model="prompt" type="text" placeholder="Enter a prompt" class="border rounded p-2 mb-4 w-full" />
+        <input v-model="prompt" type="text" placeholder="Enter a prompt" class="border rounded p-2 mb-4 w-full"
+            @keydown.enter="send" />
         <button @click="send" class="bg-blue-500 text-white p-2 rounded">
             Enviar
         </button>
@@ -42,7 +43,6 @@
             <!-- Modal -->
             <div v-if="isModalOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75">
                 <div class="bg-white p-6 rounded shadow-lg w-full max-w-md">
-                    <!-- Botón para cerrar el modal -->
                     <button @click="closeModal" class="text-gray-500 hover:text-gray-700 float-right">
                         &times;
                     </button>
@@ -100,35 +100,12 @@ export default defineComponent({
         const message2 = ref("");
         let language: "en" | "es" | "fr" = "en";
 
-        /* const send = async () => {
-            try {
-                isLoading.value = true;
-                message2.value = "Cargando... enviado";
-                message.value = "Cargando... enviado1";
-                // const result = await getCompletion(prompt.value);
-
-                //OBJETO A CREAR DEPENDIENDO DE LA RESPUESTA
-                const result = {
-                    name: "Great Wall of China",
-                    description: "One of the greatest wonders of the world.",
-                    image: "great-wall-image-url",
-                    location: "China",
-                    users: [1]
-                }
-                localStorage.setItem("place", JSON.stringify(result));
-                isLoading.value = false;
-            } catch (error) {
-                isLoading.value = false;
-                console.error("Error fetching completion:", error);
-            }
-        }; */
         const send = async () => {
             try {
                 isLoading.value = true;
                 message2.value = "Cargando... enviado";
                 message.value = "Cargando... enviado1";
 
-                // Utilizamos la función getCompletion del servicio
                 const result: Place = await getCompletion(prompt.value);
 
                 console.log('XD', result);

@@ -3,29 +3,48 @@
         <div class="text-xl font-bold p-4">Historial de Busquedas</div>
         <nav class="flex-1">
             <ul>
-                <li class="p-4 hover:bg-gray-800 cursor-pointer flex items-center">
-                    <i class="icon-class mr-2"></i>Tables
+                <li v-for="place in places" :key="place.id"
+                    class="p-4 hover:bg-gray-800 cursor-pointer flex items-center">
+                    {{ place.name }}
                 </li>
-                <li class="p-4 hover:bg-gray-800 cursor-pointer flex items-center">
-                    <i class="icon-class mr-2"></i>Forms
-                </li>
-                <li class="p-4 hover:bg-gray-800 cursor-pointer flex items-center">
-                    <i class="icon-class mr-2"></i>UI
-                </li>
-                <li class="p-4 hover:bg-gray-800 cursor-pointer flex items-center">
-                    <i class="icon-class mr-2"></i>Responsive
-                </li>
-                <!-- Agrega más elementos según sea necesario -->
             </ul>
         </nav>
-        <div class="p-4 bg-blue-600 hover:bg-blue-500 cursor-pointer">
-            Logout
-        </div>
     </div>
 </template>
 
+
 <script lang="ts">
+import { ref, onMounted } from 'vue';
+import { fetchUserPlaces, Place } from '@/services/user'; // Importa el servicio
+
 export default {
     name: 'Sidebar',
-}
+    setup() {
+        const userId = ref('');
+        const places = ref<Place[]>([]);
+
+        const getUserPlaces = async () => {
+            try {
+                console.log('Fetching places for user ID:', userId.value);
+                const response = await fetchUserPlaces(userId.value);
+                console.log('Response Data:', response);
+                places.value = response.places;
+            } catch (error) {
+                console.error('Error fetching user places:', error);
+            }
+        };
+
+        onMounted(() => {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            console.log('USER SIDE', user);
+            userId.value = user.id;
+            console.log('ID', userId);
+            getUserPlaces();
+        });
+
+        return {
+            places,
+        };
+    },
+};
 </script>
