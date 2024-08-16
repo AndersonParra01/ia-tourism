@@ -7,7 +7,7 @@ import openai
 from deep_translator import GoogleTranslator
 from rest_framework import viewsets
 from .models import TouristPlace
-from .serializers import TouristPlaceDetailSerializer, TouristPlaceListSerializer
+from .serializers import  TouristPlaceDetailWriteSerializer, TouristPlaceListSerializer, TouristPlaceReadSerializer
 from rest_framework import status
 from user.models import CustomUser
 
@@ -102,12 +102,12 @@ def getAll(request):
 @api_view(['GET'])
 def getById(request, id):
     placeTourism = get_object_or_404(TouristPlace, pk=id)
-    serializer = TouristPlaceDetailSerializer(placeTourism)
+    serializer = TouristPlaceReadSerializer(placeTourism)
     return Response(serializer.data)
 
 @api_view(['POST'])
 def create (request):
-    serializer = TouristPlaceDetailSerializer(data=request.data, partial=True)
+    serializer = TouristPlaceDetailWriteSerializer(data=request.data, partial=True)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status= status.HTTP_201_CREATED)
@@ -116,7 +116,7 @@ def create (request):
 @api_view(['PUT'])
 def update(request, id):
     placeTourism = get_object_or_404(TouristPlace, pk=id)
-    serializer = TouristPlaceDetailSerializer(placeTourism, data=request.data, partial=True)
+    serializer = TouristPlaceDetailWriteSerializer(placeTourism, data=request.data, partial=True)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
@@ -125,7 +125,7 @@ def update(request, id):
 @api_view(['PATCH'])
 def patch (request, id):
     placeTourism = get_object_or_404(placeTourism, pk=id)
-    serializer = TouristPlaceDetailSerializer(placeTourism, data = request.data, partial=True)
+    serializer = TouristPlaceDetailWriteSerializer(placeTourism, data = request.data, partial=True)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
