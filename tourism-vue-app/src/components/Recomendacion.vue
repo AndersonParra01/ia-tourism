@@ -35,54 +35,63 @@
       <div v-else class="cards-container">
         <div v-for="card in cards" :key="card.ciudad" class="card" @click="getPlaceFromRecommendation(card)" :class="{ disabled: globalClicked }">
           <h3>{{ card.ciudad }}</h3>
-          <p>Gasto: {{ card.gasto }}</p>
+          <p>Gasto Aprox: {{ card.gasto }}</p>
           <p>Tiempo: {{ card.tiempo }}</p>
           <p>{{ card.descripcion }}</p>
         </div>
       </div>
 
-      <div v-if="showModal" class="modal" @click="handleClickOutside">
-        <div class="modal-content" @click.stop>
-          <button class="close" @click="closeModal">&times;</button>
-          <h3>{{ selectedCard.ciudad }}</h3>
-          <div class="details">
-            <div v-if="selectedCard.transporte">
-              <p><b>Gasto en transporte: </b></p>
-              <ul>
-                <li v-for="item in selectedCard.transporte" :key="item">{{ item }}</li>
-              </ul>
-            </div>
-            <p v-if="selectedCard.hotel"><b>Gastos Hospedaje:</b> {{ selectedCard.hotel }}</p>
-            <p v-if="selectedCard.comida"><b>Gasto en comidas:</b> {{ selectedCard.comida }}</p>
-            <p v-if="selectedCard.documentacion"><b>Documentación necesaria:</b> {{ selectedCard.documentacion }}</p>
-            <p v-if="selectedCard.duracion"><b>Duración de viaje:</b> {{ selectedCard.duracion }}</p>
-            <p v-if="selectedCard.descripcion"><b>Descripción:</b> {{ selectedCard.descripcion }}</p>
-            <p v-if="selectedCard.lugares"><b>Lugares:</b> {{ selectedCard.lugares.join(', ') }}</p>
-            <p v-if="selectedCard.transp_local"><b>Transporte Local:</b> {{ selectedCard.transp_local }}</p>
-            <p v-if="selectedCard.clima"><b>Clima:</b> {{ selectedCard.clima }}</p>
-            <p v-if="selectedCard.seguridad"><b>Seguridad:</b> {{ selectedCard.seguridad }}</p>
-            <p v-if="selectedCard.idioma"><b>Idioma:</b> {{ selectedCard.idioma }}</p>
-            <p v-if="selectedCard.moneda"><b>Moneda:</b> {{ selectedCard.moneda }}</p>
-            <p v-if="selectedCard.costumbres"><b>Costumbres:</b> {{ selectedCard.costumbres }}</p>
-            <p v-if="selectedCard.gastronomia"><b>Gastronomía:</b> {{ selectedCard.gastronomia }}</p>
-            <p v-if="selectedCard.cultura"><b>Cultura:</b> {{ selectedCard.cultura }}</p>
-            <p v-if="selectedCard.historia"><b>Historia:</b> {{ selectedCard.historia }}</p>
-            <p v-if="selectedCard.turismo"><b>Turismo:</b> {{ selectedCard.turismo }}</p>
-            <p v-if="selectedCard.compras"><b>Compras:</b> {{ selectedCard.compras }}</p>
-            <p v-if="selectedCard.vida_nocturna"><b>Vida Nocturna:</b> {{ selectedCard.vida_nocturna }}</p>
-            <p v-if="selectedCard.transporte_local">Transporte <b>Local:</b> {{ selectedCard.transporte_local }}</p>
-            <p v-if="selectedCard.alojamiento"><b>Alojamiento:</b> {{ selectedCard.alojamiento }}</p>
-            <p v-if="selectedCard.restaurantes"><b>Restaurantes:</b> {{ selectedCard.restaurantes }}</p>
-            <p v-if="selectedCard.actividades"><b>Actividades:</b> {{ selectedCard.actividades }}</p>
-            <p v-if="selectedCard.consejos"><b>Consejos:</b> {{ selectedCard.consejos }}</p>
-            <p v-if="selectedCard.emergencias"><b>Emergencias:</b> {{ selectedCard.emergencias }}</p>
-            <p v-if="selectedCard.telefono"><b>Teléfono:</b> {{ selectedCard.telefono }}</p>
-            <p v-if="selectedCard.salud"><b>Salud:</b> {{ selectedCard.salud }}</p>
-            <p v-if="selectedCard.seguro"><b>Seguro:</b> {{ selectedCard.seguro }}</p>
-            <p v-if="selectedCard.comunicacion"><b>Comunicación:</b> {{ selectedCard.comunicacion }}</p>
-          </div>
-        </div>
+      <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" @click="handleClickOutside">
+  <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-3xl relative" @click.stop style="max-height: 90vh; overflow-y: auto;">
+    <button class="absolute top-2 right-2 text-gray-600 hover:text-gray-800 focus:outline-none" @click="closeModal">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+    
+    <h3 class="text-2xl font-bold mb-4 text-gray-800">{{ selectedCard.ciudad }}</h3>
+
+    <div class="details space-y-4">
+      <div v-if="selectedCard.transporte">
+        <p class="font-semibold text-lg">Gasto en transporte:</p>
+        <ul class="list-disc list-inside text-gray-700">
+          <li v-for="item in selectedCard.transporte" :key="item">{{ item }}</li>
+        </ul>
       </div>
+
+      <p v-if="selectedCard.hotel" class="text-gray-700"><b>Gastos Hospedaje:</b> {{ selectedCard.hotel }}</p>
+      <p v-if="selectedCard.comida" class="text-gray-700"><b>Gasto en comidas:</b> {{ selectedCard.comida }}</p>
+      <p v-if="selectedCard.documentacion" class="text-gray-700"><b>Documentación necesaria:</b> {{ selectedCard.documentacion }}</p>
+      <p v-if="selectedCard.duracion" class="text-gray-700"><b>Duración de viaje:</b> {{ selectedCard.duracion }}</p>
+      <p v-if="selectedCard.descripcion" class="text-gray-700"><b>Descripción:</b> {{ selectedCard.descripcion }}</p>
+      <p v-if="selectedCard.lugares" class="text-gray-700"><b>Lugares:</b> {{ selectedCard.lugares.join(', ') }}</p>
+      <p v-if="selectedCard.transp_local" class="text-gray-700"><b>Transporte Local:</b> {{ selectedCard.transp_local }}</p>
+      <p v-if="selectedCard.clima" class="text-gray-700"><b>Clima:</b> {{ selectedCard.clima }}</p>
+      <p v-if="selectedCard.seguridad" class="text-gray-700"><b>Seguridad:</b> {{ selectedCard.seguridad }}</p>
+      <p v-if="selectedCard.idioma" class="text-gray-700"><b>Idioma:</b> {{ selectedCard.idioma }}</p>
+      <p v-if="selectedCard.moneda" class="text-gray-700"><b>Moneda:</b> {{ selectedCard.moneda }}</p>
+      <p v-if="selectedCard.costumbres" class="text-gray-700"><b>Costumbres:</b> {{ selectedCard.costumbres }}</p>
+      <p v-if="selectedCard.gastronomia" class="text-gray-700"><b>Gastronomía:</b> {{ selectedCard.gastronomia }}</p>
+      <p v-if="selectedCard.cultura" class="text-gray-700"><b>Cultura:</b> {{ selectedCard.cultura }}</p>
+      <p v-if="selectedCard.historia" class="text-gray-700"><b>Historia:</b> {{ selectedCard.historia }}</p>
+      <p v-if="selectedCard.turismo" class="text-gray-700"><b>Turismo:</b> {{ selectedCard.turismo }}</p>
+      <p v-if="selectedCard.compras" class="text-gray-700"><b>Compras:</b> {{ selectedCard.compras }}</p>
+      <p v-if="selectedCard.vida_nocturna" class="text-gray-700"><b>Vida Nocturna:</b> {{ selectedCard.vida_nocturna }}</p>
+      <p v-if="selectedCard.transporte_local" class="text-gray-700"><b>Transporte Local:</b> {{ selectedCard.transporte_local }}</p>
+      <p v-if="selectedCard.alojamiento" class="text-gray-700"><b>Alojamiento:</b> {{ selectedCard.alojamiento }}</p>
+      <p v-if="selectedCard.restaurantes" class="text-gray-700"><b>Restaurantes:</b> {{ selectedCard.restaurantes }}</p>
+      <p v-if="selectedCard.actividades" class="text-gray-700"><b>Actividades:</b> {{ selectedCard.actividades }}</p>
+      <p v-if="selectedCard.consejos" class="text-gray-700"><b>Consejos:</b> {{ selectedCard.consejos }}</p>
+      <p v-if="selectedCard.emergencias" class="text-gray-700"><b>Emergencias:</b> {{ selectedCard.emergencias }}</p>
+      <p v-if="selectedCard.telefono" class="text-gray-700"><b>Teléfono:</b> {{ selectedCard.telefono }}</p>
+      <p v-if="selectedCard.salud" class="text-gray-700"><b>Salud:</b> {{ selectedCard.salud }}</p>
+      <p v-if="selectedCard.seguro" class="text-gray-700"><b>Seguro:</b> {{ selectedCard.seguro }}</p>
+      <p v-if="selectedCard.comunicacion" class="text-gray-700"><b>Comunicación:</b> {{ selectedCard.comunicacion }}</p>
+    </div>
+  </div>
+</div>
+
+      
     </div>
 </template>
   
@@ -94,8 +103,8 @@
       return  {
         origen: '',
         destino: '',
-        selectedOption: 'General',
-        options: ['General', 'Economico', 'Historico', 'Cultural', 'Diversión', 'Internacional'],
+        selectedOption: 'Nacional',
+        options: ['Nacional', 'Economico', 'Historico', 'Cultural', 'Diversión', 'Internacional'],
         touristPlaces: [],
         card: [],
         loading: false,
@@ -136,7 +145,7 @@
                 return;
               }
 
-              const places = await getTouristPlaces(this.origen);
+              const places = await getTouristPlaces(this.origen, this.selectedOption);
               this.cards = places;
             } catch (error) {
                 console.error('Hubo un error:', error);

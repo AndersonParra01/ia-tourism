@@ -1,5 +1,11 @@
 <template>
     <div class="fixed top-0 left-0 h-full w-64 bg-gray-900 text-white flex flex-col overflow-y-auto">
+        <router-link to="/tourism">
+            <div class="text-xl font-bold p-4 cursor-pointer hover:bg-gray-200 transition duration-200 ease-in-out hover:p-4">Home</div>
+        </router-link>
+        <router-link to="/recomendaciones">
+            <div class="text-xl font-bold p-4 cursor-pointer hover:bg-gray-200 transition duration-200 ease-in-out hover:p-4">Recomendaciones</div>
+        </router-link>
         <div class="text-xl font-bold p-4">Historial de Busquedas</div>
         <nav class="flex-1">
             <ul>
