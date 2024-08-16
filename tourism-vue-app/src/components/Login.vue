@@ -56,6 +56,7 @@ export default defineComponent({
           throw new Error("Error al iniciar sesión");
         }
         // store.commit("setUser", result.data);
+        localStorage.setItem("user", JSON.stringify(result.data));
         router.push("/tourism");
 
       } catch (error) {
