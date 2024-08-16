@@ -59,7 +59,8 @@ export const getCompletion = async (prompt: string): Promise<Place> => {
 };
 
 export async function getTouristPlaces(
-  origen: string
+  origen: string,
+  opciones: string
 ): Promise<RecomendacionesCards> {
   let openai = new OpenAI({
     apiKey: process.env.VUE_APP_CHAT_GPT_KEY,
@@ -72,21 +73,23 @@ export async function getTouristPlaces(
       {
         role: "system",
         content: `Tu eres un asistente turistico que das recomendaciones de lugares turísticos en donde el usuario te mandara un nombre de una ciudad de origen o inicio y debes recomendar al menos 6 ciudades a las cuales es recomendable viajar desde la ciudad origen. 
+                  Adicional el usuario te puede dar una opcion para que busques las ciudades de acuerdo a ese parametro, por ejemplo: Guayaquil: Internacional. Segun esta opcion tu debes buscar ciudades internacionales para recomendar.
                   Debes proporcionar un string de un arreglo de objetos json en este formato [{}, {}, {}], nada mas que eso lista para aplicar un JSON.parse 
-                  con los siguientes campos: ciudad, gasto aproximado en dolares, tiempo recomendado de estadía, y una pequeña descripción. Los nombres de las variables en el json son asi: ciudad, gasto, tiempo y descripcion respectivamente.
+                  con los siguientes campos: ciudad, gasto aproximado en dolares incluye el signo de la moneda de la ciudad de origen tambien asegurate de elegir calcular con opciones economicas y dependiendo del tiempo de viaje si se selecciona bus, vehiculo o avión, tiempo de viaje en un vehiculo o avion añadirlo en el string, y una pequeña descripción. Los nombres de las variables en el json son asi: ciudad, gasto, tiempo y descripcion respectivamente.
+                  Trata de elegir al menos 4 ciudades nacionales y 2 internacionales, con excepción de las opciones 'Nacional' e 'Internacional', en estos casos lista todas las ciudades segun la opción.
                   El string no debe llevar nada de espacios ni saltos de linea, Asegúrate de que sea un JSON bien formado. Y asegurate de no pasar de mas de 900 tokens. Si no recibes ningun nombre de ninguna ciudad devuelve un arreglo vacio`,
       },
       {
         role: "user",
-        content: "Guayaquil",
+        content: "Guayaquil: Nacional",
       },
       {
         role: "assistant",
-        content: `[{"ciudad": "Quito", "gasto": "500", "tiempo": "3 días", "descripcion": "Conocida por su centro histórico, declarado Patrimonio de la Humanidad por la UNESCO."},{"ciudad": "Cuenca", "gasto": "300", "tiempo": "4 días", "descripcion": "Famosa por su arquitectura colonial española y sus ríos que atraviesan la ciudad."},{"ciudad": "Baños", "gasto": "300", "tiempo": "2 días", "descripcion": "Conocida por sus aguas termales y su proximidad a la selva amazónica."},{"ciudad": "Salinas", "gasto": "200", "tiempo": "3 días", "descripcion": "Balneario en la costa de Ecuador, famoso por sus playas y deportes acuáticos."},{"ciudad": "Manta", "gasto": "300", "tiempo": "1 día", "descripcion": "Ciudad portuaria en la costa de Ecuador, conocida por su industria pesquera y sus playas."},{"ciudad": "Loja", "gasto": "300", "tiempo": "3 días", "descripcion": "Conocida por su rica tradición musical y cultural."}]`,
+        content: `[{"ciudad": "Quito", "gasto": "$500", "tiempo": "8 horas en bus", "descripcion": "Conocida por su centro histórico, declarado Patrimonio de la Humanidad por la UNESCO."},{"ciudad": "Cuenca", "gasto": "$300", "tiempo": "4 horas en vehiculo", "descripcion": "Famosa por su arquitectura colonial española y sus ríos que atraviesan la ciudad."},{"ciudad": "Baños", "gasto": "$300", "tiempo": "6 horas en bus", "descripcion": "Conocida por sus aguas termales y su proximidad a la selva amazónica."},{"ciudad": "Salinas", "gasto": "$200", "tiempo": "2 horas en vehiculo", "descripcion": "Balneario en la costa de Ecuador, famoso por sus playas y deportes acuáticos."},{"ciudad": "Manta", "gasto": "$300", "tiempo": "5 horas en bus", "descripcion": "Ciudad portuaria en la costa de Ecuador, conocida por su industria pesquera y sus playas."},{"ciudad": "Loja", "gasto": "$300", "tiempo": "1 hora en avión", "descripcion": "Conocida por su rica tradición musical y cultural."}]`,
       },
       {
         role: "user",
-        content: origen,
+        content: origen+': '+opciones,
       },
     ],
     max_tokens: 900,
@@ -201,7 +204,7 @@ export async function getEspecificCityData(
 export async function fetchCities(cityName: string) {
   let citiesList: string[] = [];
 
-  if (cityName.length < 4) {
+  if (cityName.length < 3) {
     return citiesList;
   }
 
