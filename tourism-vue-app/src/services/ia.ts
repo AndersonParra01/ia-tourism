@@ -1,11 +1,12 @@
 export interface Place {
-  name: string;
-  description: string;
+  description_place: string;
   image: string;
-  location: string;
-  typicalFood: string;
+  typical_food: string;
   languages: string;
-  traditionalMusic: string;
+  traditional_music: string;
+  city_tourist_map: string;
+  map_of_tourist_places_in_ecuador: string;
+  hotels: string;
   regions: string;
 }
 import {
@@ -38,17 +39,19 @@ export const getCompletion = async (prompt: string): Promise<Place> => {
 
     // Transformamos la respuesta en el formato que necesitamos
     const place: Place = {
-      description: result.description_place || "Descripción no disponible",
+      description_place:
+        result.description_place || "Descripción no disponible",
       image:
         result[" 'image': generate_image, location"] ||
         "URL de imagen no disponible",
-      location: result.location || "Ubicación no disponible",
-      typicalFood: result.typical_food || "Comida típica no disponible",
+      typical_food: result.typical_food || "Comida típica no disponible",
       languages: result.languages || "Idiomas no disponibles",
-      traditionalMusic:
+      traditional_music:
         result.traditional_music || "Música tradicional no disponible",
       regions: result.regions || "Regiones no disponibles",
-      name: "",
+      city_tourist_map: "",
+      map_of_tourist_places_in_ecuador: "",
+      hotels: "",
     };
 
     return place;
