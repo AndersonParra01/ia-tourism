@@ -71,8 +71,7 @@
                                 class="form-control" placeholder="Confirmar Password" required />
                             <button type="submit"
                                 class="w-full my-4 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">Registrar</button>
-                            <button type="button"
-                                @click="closeModal"
+                            <button type="button" @click="closeModal"
                                 class="w-full my-4 bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded">
                                 Cancelar
                             </button>
@@ -86,11 +85,11 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { getCompletion } from "./../services/ia";
+import { getCompletion, Place } from "./../services/ia";
 import DynamicText from "./DynamicText.vue";
 import Map from "./Map.vue";
 import { apiRegister } from "@/services/auth";
-import { apiPlaceCreate } from "@/services/place"; 
+import { apiPlaceCreate } from "@/services/place";
 
 export default defineComponent({
     setup() {
@@ -101,7 +100,7 @@ export default defineComponent({
         const message2 = ref("");
         let language: "en" | "es" | "fr" = "en";
 
-        const send = async () => {
+        /* const send = async () => {
             try {
                 isLoading.value = true;
                 message2.value = "Cargando... enviado";
@@ -117,6 +116,25 @@ export default defineComponent({
                     users: [1]
                 }
                 localStorage.setItem("place", JSON.stringify(result));
+                isLoading.value = false;
+            } catch (error) {
+                isLoading.value = false;
+                console.error("Error fetching completion:", error);
+            }
+        }; */
+        const send = async () => {
+            try {
+                isLoading.value = true;
+                message2.value = "Cargando... enviado";
+                message.value = "Cargando... enviado1";
+
+                // Utilizamos la función getCompletion del servicio
+                const result: Place = await getCompletion(prompt.value);
+
+                console.log('XD', result);
+                // Guarda el resultado en el localStorage
+                localStorage.setItem("place", JSON.stringify(result));
+
                 isLoading.value = false;
             } catch (error) {
                 isLoading.value = false;
@@ -155,7 +173,7 @@ export default defineComponent({
             this.isModalOpen = false;
         },
         async submitForm() {
-            if(localStorage.getItem("place") === null){
+            if (localStorage.getItem("place") === null) {
                 alert("Primero debe enviar la consulta");
                 return;
             }
@@ -172,30 +190,30 @@ export default defineComponent({
                     username: this.username,
                     password: this.password,
                 };
-                const result =  await apiRegister(user);
-                localStorage.setItem("user", JSON.stringify(result));  
-            }catch (error) {
+                const result = await apiRegister(user);
+                localStorage.setItem("user", JSON.stringify(result));
+            } catch (error) {
                 alert('Error al registrar usuario');
                 return;
             }
 
-            const placeObject = JSON.parse(localStorage.getItem("place")||"");
+            const placeObject = JSON.parse(localStorage.getItem("place") || "");
             const place = await apiPlaceCreate(placeObject);
             localStorage.removeItem("place");
-            
+
             // this.closeModal(); // Cierra el modal después de enviar el formulario
             window.location.reload();
         },
-        async saveConsult(){
-            try{
-                if(localStorage.getItem("place") === null){
+        async saveConsult() {
+            try {
+                if (localStorage.getItem("place") === null) {
                     alert("Primero debe enviar la consulta");
                     return;
                 }
-                const placeObject = JSON.parse(localStorage.getItem("place")||"");
+                const placeObject = JSON.parse(localStorage.getItem("place") || "");
                 const place = await apiPlaceCreate(placeObject);
                 localStorage.removeItem("place");
-            }catch (error) {
+            } catch (error) {
                 alert('Error al registrar historial');
                 return;
             }
