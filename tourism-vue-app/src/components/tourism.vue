@@ -3,20 +3,33 @@
         <h1 class="text-3xl font-bold mb-6 text-center text-blue-700">
             OpenAI Asistente de Turismo Virtual Ec
         </h1>
-        <div class="mb-6 text-center">
-            <label for="language" class="text-lg font-semibold text-gray-700">Seleccione su idioma:</label>
-            <select v-model="language" id="language" class="ml-2 p-2 border rounded bg-gray-50">
-                <option value="en">English</option>
-                <option value="es">Spanish</option>
-                <option value="fr">French</option>
-            </select>
+        <div class="flex justify-center mb-6">
+            <button @click="setActiveTab('general')" :class="tabClasses('general')"
+                class="px-6 py-2 font-semibold rounded-l-lg transition-colors duration-300">
+                Búsqueda General
+            </button>
+            <button @click="setActiveTab('favorites')" :class="tabClasses('favorites')"
+                class="px-6 py-2 font-semibold rounded-r-lg transition-colors duration-300">
+                Buscar Destinos Favoritos
+            </button>
         </div>
-        <div class="flex justify-center items-center mb-4">
-            <input v-model="prompt" type="text" placeholder="Selecciona tu lugar turistico"
-                class="border border-gray-300 rounded-l p-3 w-full max-w-md" @keydown.enter="send" />
-            <button @click="send" class="bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-r">
+
+        <div v-if="activeTab === 'general'" class="flex justify-center items-center mb-4 p-4">
+            <input v-model="prompt" type="text" placeholder="Selecciona tu lugar turístico"
+                class="border border-gray-300 rounded-l p-3 w-full max-w-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                @keydown.enter="send" />
+            <button @click="send"
+                class="bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-r transition-colors duration-300">
                 Enviar
             </button>
+            <button @click="startRecognition"
+                class="ml-2 bg-gray-500 hover:bg-gray-600 text-white p-3 rounded transition-colors duration-300">
+                🎤
+            </button>
+        </div>
+
+        <div v-if="activeTab === 'favorites'" class="text-center text-gray-600">
+            <Recomendacion />
         </div>
 
         <div v-if="isLoading" class="flex space-x-4 mt-4">
@@ -24,34 +37,29 @@
         </div>
 
         <PlaceDetails v-if="isDataReady" :place="selectedPlace" />
-
-        <!-- <Map /> -->
-
-
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref, watch } from "vue";
 import { getCompletion, Place } from "./../services/ia";
 import DynamicText from "./DynamicText.vue";
 import WaitComponent from "./wait.vue";
 import Map from "./Map.vue";
 import { apiRegister } from "@/services/auth";
-import PlaceDetails from './PlaceDetails.vue';
-
+import PlaceDetails from "./PlaceDetails.vue";
+import { useSpeechRecognition } from "@vueuse/core";
+import Recomendacion from "./Recomendacion.vue";
 export default defineComponent({
     setup() {
         const prompt = ref("");
         const response = ref("");
         const isLoading = ref(false);
-        const message = ref("");
-        const message2 = ref("");
-        let language: "en" | "es" | "fr" = "en";
-        const isDataReady = ref(false)
+        const language: "en" | "es" | "fr" = "es";
+        const isDataReady = ref(false);
         const selectedPlace = ref<Place>({
-            description_place: '',
-            image: '',
+            description_place: "",
+            image: "",
             typical_food: "",
             languages: "",
             traditional_music: "",
@@ -59,12 +67,38 @@ export default defineComponent({
             map_of_tourist_places_in_ecuador: "",
             hotels: "",
             regions: "",
+            location: ""
         });
+        const imageFile = ref<File>(new File([], ''));
+        const activeTab = ref<'general' | 'favorites'>('general');
+        const message = ref<string | null>(null);
+
+        onMounted(() => {
+            const savedTab = localStorage.getItem('activeTab') as 'general' | 'favorites';
+            if (savedTab) {
+                activeTab.value = savedTab;
+            }
+        });
+
+        const setActiveTab = (tab: 'general' | 'favorites') => {
+            isDataReady.value = false;
+            prompt.value = '';
+            activeTab.value = tab;
+            localStorage.setItem('activeTab', tab);
+        };
+
+        const tabClasses = (tab: 'general' | 'favorites') => {
+            return activeTab.value === tab
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-200 text-gray-700';
+        };
+
         const send = async () => {
             try {
+                isDataReady.value = false;
                 isLoading.value = true;
-                const result: Place = await getCompletion(prompt.value);
-                console.log('XD', result);
+                const result: Place = await getCompletion(prompt.value, language, imageFile.value || null);
+                console.log("XD", result);
 
                 selectedPlace.value = result;
                 isLoading.value = false;
@@ -75,7 +109,67 @@ export default defineComponent({
                 isDataReady.value = false;
             }
         };
-        return { prompt, response, send, language, message, message2, isLoading, selectedPlace, isDataReady };
+
+        const { isListening, result, start, stop } = useSpeechRecognition({
+            lang: language,
+            interimResults: true,
+            continuous: true,
+        });
+
+        let silenceTimer: number | null = null;
+
+        watch(result, (newResult) => {
+            console.log('TEMPORIZADOR', result.value);
+            if (newResult) {
+                prompt.value = newResult;
+                if (silenceTimer) {
+                    clearTimeout(silenceTimer);
+                }
+
+                silenceTimer = setTimeout(() => {
+                    stop();
+                    if (prompt.value === '') {
+                        alert('No se ha detectado ningun mensaje');
+                    }
+                    send();
+                }, 2000);
+            }
+        });
+
+        const startRecognition = () => {
+            start();
+            silenceTimer = setTimeout(() => {
+                stop();
+            }, 5000);
+        };
+
+        const stopRecognition = () => {
+            stop();
+        };
+
+        const handleImageUpload = (event: Event) => {
+            /* const input = event.target as HTMLInputElement;
+            if (input.files && input.files.length > 0) {
+              imageFile.value = input.files[0];
+            } */
+        };
+        return {
+            prompt,
+            response,
+            send,
+            language,
+            message,
+            isLoading,
+            selectedPlace,
+            isDataReady,
+            handleImageUpload,
+            startRecognition,
+            stopRecognition,
+            isListening,
+            setActiveTab,
+            activeTab,
+            tabClasses
+        };
     },
     computed: {
         isUserLoggedIn() {
@@ -89,7 +183,8 @@ export default defineComponent({
         DynamicText,
         Map,
         WaitComponent,
-        PlaceDetails
+        PlaceDetails,
+        Recomendacion
     },
     data() {
         return {
@@ -129,70 +224,15 @@ export default defineComponent({
                 const result = await apiRegister(user);
                 localStorage.setItem("user", JSON.stringify(result));
             } catch (error) {
-                alert('Error al registrar usuario');
+                alert("Error al registrar usuario");
                 return;
             }
 
             const placeObject = JSON.parse(localStorage.getItem("place") || "");
             window.location.reload();
         },
-
     },
 });
 </script>
 
-<style>
-.modal-bg {
-    background-color: rgba(0, 0, 0, 0.75);
-}
-
-.abs-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-form {
-    text-align: center;
-    margin: auto;
-    width: 50%;
-    max-width: 325px;
-    min-width: 325px;
-    padding: 0 30px 30px 30px;
-    opacity: 0.85;
-    box-shadow: 0px 0px 10px rgb(6, 7, 45), 0px 0px 30px white;
-}
-
-.form-control {
-    display: block;
-    padding: 10px;
-    width: 100%;
-    margin: 5px 0;
-    font-size: 18px;
-    margin-bottom: 5px;
-    border-radius: 5px;
-    height: 35px;
-    border: 1px solid #6b6767;
-}
-
-.btn {
-    width: 100%;
-    margin-bottom: 15px;
-    height: 35px;
-    border-radius: 10px;
-}
-
-.imagenUsuario {
-    margin-top: -50px;
-    margin-bottom: 35px;
-}
-
-.imagenUsuario img {
-    width: 100px;
-    height: 100px;
-    box-shadow: 0px 0px 3px #848484;
-    border-radius: 50%;
-    margin-left: auto;
-    margin-right: auto;
-}
-</style>
+<style></style>

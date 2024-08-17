@@ -8,6 +8,7 @@ export interface Place {
   map_of_tourist_places_in_ecuador: string;
   hotels: string;
   regions: string;
+  location: string;
 }
 import {
   RecomendacionesCards,
@@ -17,17 +18,25 @@ import {
 import axios from "axios";
 import { OpenAI } from "openai";
 
-export const getCompletion = async (prompt: string): Promise<Place> => {
+export const getCompletion = async (
+  prompt: string,
+  language: string,
+  imageFile: File
+): Promise<Place> => {
   try {
+    const formData = new FormData();
+    formData.append("prompt", prompt);
+    formData.append("language", language);
+
+    if (imageFile) {
+      formData.append("image", imageFile);
+    }
+
     const response = await fetch(
-      `http://localhost:8000/api/openai/completion?prompt=${encodeURIComponent(
-        prompt
-      )}`,
+      "http://localhost:8000/api/openai/completion",
       {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        method: "POST",
+        body: formData,
       }
     );
 
@@ -37,23 +46,21 @@ export const getCompletion = async (prompt: string): Promise<Place> => {
 
     const result = await response.json();
 
-    // Transformamos la respuesta en el formato que necesitamos
     const place: Place = {
       description_place:
         result.description_place || "Descripción no disponible",
-      image:
-        result[" 'image': generate_image, location"] ||
-        "URL de imagen no disponible",
+      image: result.image || "URL de imagen no disponible",
       typical_food: result.typical_food || "Comida típica no disponible",
       languages: result.languages || "Idiomas no disponibles",
       traditional_music:
         result.traditional_music || "Música tradicional no disponible",
-      regions: result.regions || "Regiones no disponibles",
       city_tourist_map: "",
       map_of_tourist_places_in_ecuador: "",
       hotels: "",
+      regions: result.regions || "Regiones no disponibles",
+      location: result.location || "Ubicación no disponible",
     };
-
+    console.log("RESPUESTA oOK: ", place);
     return place;
   } catch (error) {
     console.error("Error fetching completion:", error);
@@ -92,7 +99,7 @@ export async function getTouristPlaces(
       },
       {
         role: "user",
-        content: origen+': '+opciones,
+        content: origen + ": " + opciones,
       },
     ],
     max_tokens: 900,

@@ -4,6 +4,7 @@ import Register from "../components/Register.vue";
 import Map from "../components/Map.vue";
 import Tourism from "@/components/tourism.vue";
 import Recomendacion from "@/components/Recomendacion.vue";
+import HistorialBusqueda from "@/components/HistorialBusqueda.vue";
 
 const routes = [
   {
@@ -29,6 +30,11 @@ const routes = [
     path: "/tourism",
     name: "Tourism",
     component: Tourism,
+  },
+  {
+    path: "/historial-busquedas",
+    name: "HistorialBusqueda",
+    component: HistorialBusqueda,
   },
   {
     path: "/recomendaciones",

@@ -4,6 +4,21 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <!-- Tarjeta de información principal -->
+            <div class="col-span-1 md:col-span-2 lg:col-span-3">
+                <div tabindex="0"
+                    class="collapse collapse-arrow bg-white shadow-lg rounded-xl transition-transform transform hover:scale-105 hover:shadow-xl">
+                    <input type="checkbox" checked /> <!-- Aquí se agrega el atributo checked -->
+                    <div class="collapse-title text-xl font-bold text-green-600">
+                        Mapa Turístico e Imagen
+                    </div>
+                    <div class="collapse-content">
+                        <div v-if="place.location" class="mb-4">
+                            <img :src="place.location" alt="Mapa turístico"
+                                class="rounded-lg shadow-md w-full h-64 object-cover" />
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="bg-white shadow-lg rounded-xl p-8 flex flex-col justify-between h-full transition-transform transform hover:scale-105 hover:shadow-xl"
                 v-if="place">
                 <div>
@@ -25,6 +40,16 @@
                 </div>
             </div>
 
+            <div class="bg-white shadow-lg rounded-xl p-8 flex flex-col justify-between h-full transition-transform transform hover:scale-105 hover:shadow-xl"
+                v-if="place.languages">
+                <div>
+                    <h3 class="text-xl font-bold mb-4 text-blue-600">Idiomas</h3>
+                    <p class="text-gray-700">{{ place.languages }}</p>
+                </div>
+            </div>
+
+
+
             <!-- Tarjeta de música tradicional -->
             <div class="bg-white shadow-lg rounded-xl p-8 flex flex-col justify-between h-full transition-transform transform hover:scale-105 hover:shadow-xl"
                 v-if="place.traditional_music">
@@ -34,35 +59,16 @@
                 </div>
             </div>
 
-            <!-- Tarjeta de idiomas -->
             <div class="bg-white shadow-lg rounded-xl p-8 flex flex-col justify-between h-full transition-transform transform hover:scale-105 hover:shadow-xl"
-                v-if="place.languages">
+                v-if="place.regions">
                 <div>
-                    <h3 class="text-xl font-bold mb-4 text-blue-600">Idiomas</h3>
-                    <p class="text-gray-700">{{ place.languages }}</p>
+                    <h3 class="text-xl font-bold mb-4 text-green-600">Regiones Asociadas</h3>
+                    <p class="text-gray-700">{{ place.regions }}</p>
                 </div>
             </div>
 
-            <!-- Acordeón para el mapa turístico y la imagen, ocupando toda la fila -->
-            <div class="col-span-1 md:col-span-2 lg:col-span-3">
-                <div tabindex="0"
-                    class="collapse collapse-arrow bg-white shadow-lg rounded-xl transition-transform transform hover:scale-105 hover:shadow-xl">
-                    <input type="checkbox" />
-                    <div class="collapse-title text-xl font-bold text-green-600">
-                        Mapa Turístico e Imagen
-                    </div>
-                    <div class="collapse-content">
-                        <div v-if="place.city_tourist_map" class="mb-4">
-                            <img :src="place.city_tourist_map" alt="Mapa turístico"
-                                class="rounded-lg shadow-md w-full h-64 object-cover" />
-                        </div>
-                        <div v-if="place.image">
-                            <img :src="place.image" alt="Imagen del lugar"
-                                class="rounded-lg shadow-md w-full h-64 object-cover" />
-                        </div>
-                    </div>
-                </div>
-            </div>
+
+
 
             <!-- Hoteles cercanos -->
             <div class="bg-white shadow-lg rounded-xl p-8 flex flex-col justify-between h-full transition-transform transform hover:scale-105 hover:shadow-xl"
@@ -74,6 +80,9 @@
                     </ul>
                 </div>
             </div>
+
+
+
         </div>
 
         <div class="flex justify-center mt-10">
@@ -95,6 +104,7 @@ export default defineComponent({
     props: {
         place: {
             type: Object as PropType<{
+                location: any;
                 description_place: string;
                 typical_food?: string;
                 languages?: string;
@@ -102,6 +112,7 @@ export default defineComponent({
                 city_tourist_map?: string;
                 image?: string;
                 hotels?: string;
+                regions?: string;
             }>,
             required: true,
         },

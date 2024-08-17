@@ -23,14 +23,21 @@ def language_selector(language_code):
         raise ValueError(f"Language code '{language_code}' is not supported.")
     return language_code
 
-@api_view(['GET'])
+@api_view(['POST'])
 def get_completion(request):
-    prompt = request.query_params.get('prompt')
+    prompt = request.data.get('prompt')
+    language = request.data.get('language', 'es')
     openai.api_key = settings.OPENAI_API_KEY
 
     try:
+        if language == 'es':
+            system_message = 'Eres un asistente útil especializado en turismo para Ecuador y respondes en español debes de ser lo mas claro y preciso en tus respuestas si mucho redondeo ve directo.'
+        else:
+            system_message = 'You are a useful assistant specialized in tourism for Ecuador and you answer in Spanish, you must be as clear and precise in your answers if a lot of rounding is direct.'
+
         combined_prompt = f"""
-        1. Provide a detailed and accurate description of the place: {prompt}.
+       {prompt}
+        1. Provide a detailed and accurate description of the place.
         2. Describe the typical food of the region mentioned in the prompt.
         3. List the languages spoken in the region described.
         4. Describe the traditional music associated with the place.
@@ -40,17 +47,20 @@ def get_completion(request):
         response = openai.chat.completions.create(
             model='gpt-4',
             messages=[
-                {'role': 'system', 'content': 'You are a helpful assistant specialized in tourism for Ecuador.'},
+                {'role': 'system', 'content': system_message},
                 {'role': 'user', 'content': combined_prompt}
             ],
             temperature=0.9,
-            max_tokens=1000
+            max_tokens=500
         )
         print('XD', response)
 
         content = response.choices[0].message.content
 
         parts = content.split('\n\n')
+        if len(parts) < 5:
+            return Response({'error': 'Respuesta incompleta de OpenAI'}, status=400)
+
 
         description_place = parts[0]
         typical_food = parts[1]
@@ -58,13 +68,12 @@ def get_completion(request):
         traditional_music = parts[3]
         regions = parts[4]
 
-        """  generate_image = generate_image_ia(prompt) """
+        """ generate_image = generate_image_ia(prompt) """
+        map_url = get_google_maps_static_image(prompt)
 
 
         response_data = {
             'description_place': description_place,
-            """ 'image': generate_image, """
-            'location': '',  # Esto también puede ser llenado con una API de localización
             'typical_food': typical_food,
             'languages': languages,
             'traditional_music': traditional_music,
@@ -72,8 +81,10 @@ def get_completion(request):
             'map_of_tourist_places_in_ecuador': '',  # Similar al campo anterior
             'hotels': '',  # Podrías integrar una API de hoteles aquí
             'regions': regions,
+            'location': map_url,
         }
-
+        """ 'image': generate_image, """
+        print('DATA RESPONSE: ', response_data)
         return Response(response_data)
 
     except Exception as e:
@@ -83,12 +94,35 @@ def generate_image_ia(prompt):
     response = openai.images.generate(
         model='dall-e-3',
         prompt=prompt,
-        size="1024x1024",
+        size="512x512",
         quality="standard",
         n=1,
     )
     print(response)
     return response.data[0].url
+
+
+import requests
+
+def get_google_maps_static_image(location: str) -> str:
+    google_maps_api_key = 'AIzaSyCoByUEd2cKg5w7cHN9LJ-VHVlQduATR2Q'
+    google_maps_static_url = 'https://maps.googleapis.com/maps/api/staticmap'
+
+    params = {
+        'center': location,
+        'zoom': 9,
+        'size': '800x600',
+        'maptype': 'roadmap',
+        'markers': f'color:red|{location}',
+        'key': google_maps_api_key,
+    }
+
+    response = requests.get(google_maps_static_url, params=params)
+
+    if response.status_code == 200:
+        return response.url
+    else:
+        return ''
 
 #CRUD BY PLACE-TOURISM
 

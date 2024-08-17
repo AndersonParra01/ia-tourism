@@ -1,23 +1,33 @@
 <template>
-    <div class="fixed top-0 left-0 h-full w-64 bg-gray-900 text-white flex flex-col overflow-y-auto">
+    <div class="fixed top-0 left-0 h-full w-64 bg-blue-800 text-white flex flex-col overflow-y-auto">
+        <!-- Logo -->
+        <div class="flex items-center justify-center py-6">
+            <img src="@/assets/turismo.png" alt="Logo" style="width: 75%; height: 90%;" class="object-contain" />
+        </div>
+
         <router-link to="/tourism">
-            <div class="text-xl font-bold p-4 cursor-pointer hover:bg-gray-200 transition duration-200 ease-in-out hover:p-4">Home</div>
+            <div
+                class="font-bold p-4 cursor-pointer hover:bg-blue-700 transition duration-200 ease-in-out flex items-center">
+                <i class="bx bx-home mr-2"></i> Inicio
+            </div>
         </router-link>
-        <router-link to="/recomendaciones">
-            <div class="text-xl font-bold p-4 cursor-pointer hover:bg-gray-200 transition duration-200 ease-in-out hover:p-4">Recomendaciones</div>
+        <router-link to="/historial-busquedas">
+            <div
+                class="font-bold p-4 cursor-pointer hover:bg-blue-700 transition duration-200 ease-in-out flex items-center">
+                <i class="bx bx-history mr-2"></i> Historial de Busquedas
+            </div>
         </router-link>
-        <div class="text-xl font-bold p-4">Historial de Busquedas</div>
-        <nav class="flex-1">
+        <nav class="flex-1 mt-4">
             <ul>
                 <li v-for="place in places" :key="place.id"
-                    class="p-4 hover:bg-gray-800 cursor-pointer flex items-center">
-                    {{ place.description_place ? place.description_place : 'Lugar en null' }}
+                    class="p-4 hover:bg-blue-700 cursor-pointer flex items-center transition-colors duration-200 ease-in-out">
+                    <i class="bx bx-map mr-2"></i> {{ place.description_place ? place.description_place : 'Lugar vacío'
+                    }}
                 </li>
             </ul>
         </nav>
     </div>
 </template>
-
 
 <script lang="ts">
 import { ref, onMounted } from 'vue';
@@ -54,3 +64,5 @@ export default {
     },
 };
 </script>
+
+<style scoped></style>

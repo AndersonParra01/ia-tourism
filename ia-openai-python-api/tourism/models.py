@@ -13,6 +13,7 @@ class TouristPlace(models.Model):
     regions = models.TextField(blank=True, null=True)
 
     users = models.ManyToManyField(CustomUser, related_name='places', blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'tourist_places'
