@@ -1,26 +1,26 @@
 <template>
-  <div class="flex items-center justify-center m-14 bg-gray-100">
+  <div class="m-12 flex items-center justify-center bg-gray-100">
     <form @submit.prevent="handleLogin" class="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full">
       <div class="flex justify-center mb-6">
         <img src="./../assets/user.png" class="w-24 h-24 rounded-full shadow-md" />
       </div>
       <div class="mb-4 text-left">
-        <label for="user" class="block text-gray-700 font-bold mb-1">Usuario:</label>
-        <input type="text" id="user" v-model="userName" placeholder="Ingresa tu usuario" required
+        <label for="user" class="block text-gray-700 font-bold mb-1">{{ $t('username') }}:</label>
+        <input type="text" id="user" v-model="userName" :placeholder="$t('enterUsername')" required
           class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300" />
       </div>
       <div class="mb-6 text-left">
-        <label for="password" class="block text-gray-700 font-bold mb-1">Contraseña:</label>
-        <input type="password" id="password" v-model="password" placeholder="Ingresa tu contraseña" required
+        <label for="password" class="block text-gray-700 font-bold mb-1">{{ $t('password') }}:</label>
+        <input type="password" id="password" v-model="password" :placeholder="$t('enterPassword')" required
           class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300" />
       </div>
       <button type="submit"
-        class="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200">
-        Login
+        class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition duration-200">
+        {{ $t('login') }}
       </button>
       <p class="text-center mt-4 text-gray-600">
-        ¿No tienes cuenta?
-        <router-link to="/register" class="text-blue-500 hover:text-blue-700">Regístrate aquí</router-link>
+        {{ $t('dontHaveAccount') }}
+        <router-link to="/register" class="text-blue-500 hover:text-blue-700"> {{ $t('registerHere') }}</router-link>
       </p>
     </form>
   </div>
@@ -44,7 +44,7 @@ export default defineComponent({
           throw new Error("Error al iniciar sesión");
         }
         localStorage.setItem("user", JSON.stringify(result.user));
-        window.location.href = '/tourism';
+        window.location.href = "/tourism";
       } catch (error) {
         alert("Error al iniciar sesión");
       }
@@ -59,58 +59,4 @@ export default defineComponent({
 });
 </script>
 
-<<<<<<< HEAD <style scoped></style>
-  =======
-  <style scoped>
-  .abs-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-  }
-
-  form {
-    text-align: center;
-    margin: auto;
-    width: 50%;
-    max-width: 325px;
-    min-width: 325px;
-    padding: 0 30px 30px 30px;
-    opacity: 0.85;
-    box-shadow: 0px 0px 10px rgb(6, 7, 45), 0px 0px 30px white;
-  }
-
-  .form-control {
-    display: block;
-    padding: 10px;
-    width: 100%;
-    margin: 5px 0;
-    font-size: 18px;
-    margin-bottom: 5px;
-    border-radius: 5px;
-    height: 35px;
-    border: 1px solid #6b6767;
-  }
-
-  .btn {
-    width: 100%;
-    margin-bottom: 15px;
-    height: 35px;
-    border-radius: 10px;
-  }
-
-  .imagenUsuario {
-    margin-top: -50px;
-    margin-bottom: 35px;
-  }
-
-  .imagenUsuario img {
-    width: 100px;
-    height: 100px;
-    box-shadow: 0px 0px 3px #848484;
-    border-radius: 50%;
-    margin-left: auto;
-    margin-right: auto;
-  }
-</style>
-  >>>>>>> 49e8b469ca6e3273edb5c6047bffc133290ad629
+<style scoped></style>

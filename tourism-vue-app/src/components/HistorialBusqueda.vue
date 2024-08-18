@@ -1,31 +1,30 @@
 <template>
     <div class="flex justify-center mt-2 w-full">
         <div class="bg-white shadow-lg rounded-lg p-6 w-full">
+            <div class="flex justify-between items-center mb-4">
+                <h1 class="text-2xl font-semibold text-gray-700">Historial de Recomendaciones</h1>
+
+                <div class="flex items-center space-x-4">
+                    <div v-if="selectedItems.length != 0">
+                        <button @click="deleteSelectedItems"
+                            class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+                            Eliminar Seleccionados
+                        </button>
+                    </div>
+
+                    <div class="relative">
+                        <input type="text" v-model="searchQuery" placeholder="Buscar en el historial"
+                            class="border rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-64" />
+                        <i class="bx bx-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                </div>
+            </div>
+
             <div v-if="isLoading" class="text-center text-blue-500">
                 <i class="fas fa-spinner fa-spin mr-2"></i> Cargando...
             </div>
 
             <div v-else>
-                <div class="flex justify-between items-center mb-4">
-                    <h1 class="text-2xl font-semibold text-gray-700">Historial de Recomendaciones</h1>
-
-                    <div class="flex items-center space-x-4">
-                        <div v-if="selectedItems.length != 0">
-                            <button @click="deleteSelectedItems"
-                                class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
-                                Eliminar Seleccionados
-                            </button>
-                        </div>
-
-                        <div class="relative">
-                            <input type="text" v-model="searchQuery" placeholder="Buscar en el historial"
-                                class="border rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-64" />
-                            <i
-                                class="bx bx-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        </div>
-                    </div>
-                </div>
-
                 <div v-for="(group, date) in filteredHistory" :key="date" class="mb-8">
                     <span class="block text-2xl">
                         {{ new Date(date).toLocaleDateString('es-ES', {
@@ -84,8 +83,10 @@ export default defineComponent({
         const loadPlaces = async () => {
             try {
                 const userSave = JSON.parse(localStorage.getItem('user') || '{}');
-                const user = await fetchUserPlaces(userSave.id);
-                history.value = user.places;
+                if (userSave.id != undefined && userSave.id != null) {
+                    const user = await fetchUserPlaces(userSave.id);
+                    history.value = user.places;
+                }
             } catch (error) {
                 console.error('Error al obtener los lugares:', error);
             } finally {
@@ -152,7 +153,7 @@ export default defineComponent({
             menuOpen,
             selectedItems,
             deleteSelectedItems,
-            isLoading // Devuelve el estado de carga
+            isLoading
         };
     }
 });

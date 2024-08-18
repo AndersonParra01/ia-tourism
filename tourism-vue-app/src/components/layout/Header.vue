@@ -2,7 +2,7 @@
     <div class="flex items-center justify-between bg-white p-4 shadow-md">
         <div class="relative">
             <div v-if="isUserLoggedIn">
-                <input type="text" placeholder="Search"
+                <input type="text" :placeholder="$t('search')"
                     class="p-2 pl-10 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 <svg class="w-5 h-5 text-gray-400 absolute top-1/2 left-3 transform -translate-y-1/2" fill="none"
                     stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -13,14 +13,14 @@
                 <button
                     class="ml-2 bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition duration-300"
                     @click="goToHome">
-                    Inicio
+                    {{ $t('home') }}
                 </button>
 
             </div>
             <div v-else>
                 <button class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition duration-300"
                     @click="goToHome">
-                    Inicio
+                    {{ $t('home') }}
                 </button>
             </div>
         </div>
@@ -29,12 +29,12 @@
             <div v-if="!isUserLoggedIn">
                 <button class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition duration-300"
                     @click="goToLogin">
-                    Iniciar Sesión
+                    {{ $t('login') }}
                 </button>
                 <button
                     class="bg-blue-500 text-white px-4 py-2 rounded-full ml-2 hover:bg-blue-600 transition duration-300"
                     @click="goToRegister">
-                    Registro
+                    {{ $t('register') }}
                 </button>
             </div>
             <div v-else class="flex items-center space-x-4">
@@ -42,7 +42,7 @@
                 <span class="font-semibold text-gray-800">{{ userLogin.username }}</span>
                 <button class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition duration-300"
                     @click="logout">
-                    Salir
+                    {{ $t('logout') }}
                 </button>
             </div>
         </div>

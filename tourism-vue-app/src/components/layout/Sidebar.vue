@@ -8,20 +8,21 @@
         <router-link to="/tourism">
             <div
                 class="font-bold p-4 cursor-pointer hover:bg-blue-700 transition duration-200 ease-in-out flex items-center">
-                <i class="bx bx-home mr-2"></i> Inicio
+                <i class="bx bx-home mr-2"></i> {{ $t('home') }}
             </div>
         </router-link>
         <router-link to="/historial-busquedas">
             <div
                 class="font-bold p-4 cursor-pointer hover:bg-blue-700 transition duration-200 ease-in-out flex items-center">
-                <i class="bx bx-history mr-2"></i> Historial de Busquedas
+                <i class="bx bx-history mr-2"></i>{{ $t('searchHistory') }}
             </div>
         </router-link>
         <nav class="flex-1 mt-4">
             <ul>
                 <li v-for="place in places" :key="place.id"
                     class="p-4 hover:bg-blue-700 cursor-pointer flex items-center transition-colors duration-200 ease-in-out">
-                    <i class="bx bx-map mr-2"></i> {{ place.description_place ? place.description_place : 'Lugar vacío'
+                    <i class="bx bx-map mr-2"></i> {{ place.description_place ? place.description_place :
+                        $t('emptyPlace')
                     }}
                 </li>
             </ul>
@@ -55,7 +56,9 @@ export default {
             console.log('USER SIDE', user);
             userId.value = user.id;
             console.log('ID', userId);
-            getUserPlaces();
+            if (user.id != undefined && user.id != null) {
+                getUserPlaces();
+            }
         });
 
         return {

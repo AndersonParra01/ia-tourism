@@ -27,14 +27,14 @@ def language_selector(language_code):
 @api_view(['POST'])
 def get_completion(request):
     prompt = request.data.get('prompt')
-    language = request.data.get('language', 'es')
+    language = request.data.get('language')
     openai.api_key = settings.OPENAI_API_KEY
-
+    print('REQUEST:', request.data)
     try:
         if language == 'es':
             system_message = 'Eres un asistente útil especializado en turismo para Ecuador y respondes en español debes de ser lo mas claro y preciso en tus respuestas si mucho redondeo ve directo.'
         else:
-            system_message = 'You are a useful assistant specialized in tourism for Ecuador and you answer in Spanish, you must be as clear and precise in your answers if a lot of rounding is direct.'
+            system_message = 'You are a useful assistant specialized in tourism for Ecuador and you answer in english, you must be as clear and precise in your answers if a lot of rounding is direct.'
 
         combined_prompt = f"""
        {prompt}

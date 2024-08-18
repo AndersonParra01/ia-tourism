@@ -1,34 +1,36 @@
 <template>
     <div class="mt-2 p-8 bg-white shadow-md rounded-lg">
         <h1 class="text-3xl font-bold mb-6 text-center text-blue-700">
-            OpenAI Asistente de Turismo Virtual Ec
+            {{ $t('welcome') }}
         </h1>
         <div class="flex justify-center mb-6">
             <button @click="setActiveTab('general')" :class="tabClasses('general')"
                 class="px-6 py-2 font-semibold rounded-l-lg transition-colors duration-300">
-                Búsqueda General
+                {{ $t('generalSearch') }}
             </button>
             <button @click="setActiveTab('favorites')" :class="tabClasses('favorites')"
                 class="px-6 py-2 font-semibold rounded-r-lg transition-colors duration-300">
-                Buscar Destinos Favoritos
+                {{ $t('favoriteDestinations') }}
             </button>
         </div>
 
         <div v-if="activeTab === 'general'" class="flex flex-col items-center justify-center mb-4 p-4">
             <div class="mb-6 text-center flex justify-center items-center">
-                <label for="language" class="text-lg font-semibold text-gray-700 mb-2">Seleccione su idioma:</label>
-                <select v-model="language" id="language" class="ml-2 p-2 border rounded bg-gray-50">
+                <label for="language" class="text-lg font-semibold text-gray-700 mb-2">{{ $t('selectLanguage')
+                    }}</label>
+                <select v-model="language" id="language" class="ml-2 p-2 border rounded bg-gray-50"
+                    @change="changeLanguage">
                     <option value="en">Inglés</option>
-                    <option value="es">Español </option>
+                    <option value="es">Español</option>
                 </select>
             </div>
             <div class="flex items-center w-full max-w-md">
-                <input v-model="prompt" type="text" placeholder="Selecciona tu lugar turístico"
+                <input v-model="prompt" type="text" :placeholder="$t('enterPlace')"
                     class="border border-gray-300 rounded-l p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                     @keydown.enter="send" />
                 <button @click="send"
                     class="bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-r transition-colors duration-300">
-                    Enviar
+                    {{ $t('send') }}
                 </button>
                 <button @click="startRecognition"
                     class="ml-2 bg-gray-500 hover:bg-gray-600 text-white p-3 rounded transition-colors duration-300">
@@ -60,12 +62,13 @@ import { apiRegister } from "@/services/auth";
 import PlaceDetails from "./PlaceDetails.vue";
 import { useSpeechRecognition } from "@vueuse/core";
 import Recomendacion from "./Recomendacion.vue";
+import { getCurrentInstance } from "vue";
+
 export default defineComponent({
     setup() {
         const prompt = ref("");
         const response = ref("");
         const isLoading = ref(false);
-        const language: "en" | "es" | "fr" = "es";
         const isDataReady = ref(false);
         const selectedPlace = ref<Place>({
             description_place: "",
@@ -83,8 +86,16 @@ export default defineComponent({
         const imageFile = ref<File>(new File([], ''));
         const activeTab = ref<'general' | 'favorites'>('general');
         const message = ref<string | null>(null);
+        const instance = getCurrentInstance();
+        const locale = ref(localStorage.getItem('selectedLanguage') || 'es');
+
+        // Configurar i18n locale desde localStorage
+        if (instance && instance.appContext.config.globalProperties.$i18n) {
+            instance.appContext.config.globalProperties.$i18n.locale = locale.value;
+        }
 
         onMounted(() => {
+            console.log('IDIOMA', locale.value);
             const savedTab = localStorage.getItem('activeTab') as 'general' | 'favorites';
             if (savedTab) {
                 activeTab.value = savedTab;
@@ -106,9 +117,15 @@ export default defineComponent({
 
         const send = async () => {
             try {
+                message.value = '';
                 isDataReady.value = false;
                 isLoading.value = true;
-                const result = await getCompletion(prompt.value, language, imageFile.value || null);
+                console.log({
+                    "Promp": prompt.value,
+                    "Locale": locale.value,
+                    "Image": imageFile.value
+                });
+                const result = await getCompletion(prompt.value, locale.value, imageFile.value || null);
                 if (result.message) {
                     message.value = result.message;
                     isLoading.value = false;
@@ -128,7 +145,7 @@ export default defineComponent({
         };
 
         const { isListening, result, start, stop } = useSpeechRecognition({
-            lang: language,
+            lang: locale.value,
             interimResults: true,
             continuous: true,
         });
@@ -170,11 +187,11 @@ export default defineComponent({
               imageFile.value = input.files[0];
             } */
         };
+
         return {
             prompt,
             response,
             send,
-            language,
             message,
             isLoading,
             selectedPlace,
@@ -185,7 +202,8 @@ export default defineComponent({
             isListening,
             setActiveTab,
             activeTab,
-            tabClasses
+            tabClasses,
+            locale // Incluye locale en el return
         };
     },
     computed: {
@@ -211,6 +229,7 @@ export default defineComponent({
             username: "",
             password: "",
             confirmPassword: "",
+            language: this.$i18n.locale
         };
     },
     methods: {
@@ -248,8 +267,15 @@ export default defineComponent({
             const placeObject = JSON.parse(localStorage.getItem("place") || "");
             window.location.reload();
         },
+        changeLanguage() {
+            this.$i18n.locale = this.language;
+            localStorage.setItem('selectedLanguage', this.language);
+            window.location.reload();
+            console.log('LANGUAGE', this.language);
+        },
     },
 });
 </script>
+
 
 <style></style>

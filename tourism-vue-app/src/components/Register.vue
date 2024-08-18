@@ -1,41 +1,45 @@
 <template>
-  <div class="flex items-center justify-center min-h-screen bg-gray-100">
-    <form @submit.prevent="handleRegister" class="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full">
+  <div class="flex items-center justify-center m-12 bg-gray-100">
+    <form @submit.prevent="handleRegister" class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
       <div class="flex justify-center mb-6">
         <img src="./../assets/user.png" class="w-24 h-24 rounded-full shadow-md" />
       </div>
-      <div class="mb-4 text-left">
-        <label for="name" class="block text-gray-700 font-bold mb-1">Nombre</label>
-        <input v-model="name" type="text" id="name" placeholder="Ingresa tu nombre" required
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label for="name" class="block text-gray-700 font-bold mb-1">{{ $t('name') }}</label>
+          <input v-model="name" type="text" id="name" :placeholder="$t('name')" required
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300" />
+        </div>
+        <div>
+          <label for="lastName" class="block text-gray-700 font-bold mb-1">{{ $t('lastName') }}</label>
+          <input v-model="lastName" type="text" id="lastName" :placeholder="$t('lastName')" required
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300" />
+        </div>
+      </div>
+      <div class="mb-4">
+        <label for="username" class="block text-gray-700 font-bold mb-1">{{ $t('username') }}</label>
+        <input v-model="username" type="text" id="username" :placeholder="$t('enterUsername')" required
           class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300" />
       </div>
-      <div class="mb-4 text-left">
-        <label for="lastName" class="block text-gray-700 font-bold mb-1">Apellido</label>
-        <input v-model="lastName" type="text" id="lastName" placeholder="Ingresa tu apellido" required
-          class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300" />
-      </div>
-      <div class="mb-4 text-left">
-        <label for="username" class="block text-gray-700 font-bold mb-1">Nombre de usuario</label>
-        <input v-model="username" type="text" id="username" placeholder="Crea un nombre de usuario" required
-          class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300" />
-      </div>
-      <div class="mb-4 text-left">
-        <label for="password" class="block text-gray-700 font-bold mb-1">Contraseña</label>
-        <input v-model="password" type="password" id="password" placeholder="Crea una contraseña segura" required
-          class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300" />
-      </div>
-      <div class="mb-6 text-left">
-        <label for="confirmPassword" class="block text-gray-700 font-bold mb-1">Confirmar contraseña</label>
-        <input v-model="confirmPassword" type="password" id="confirmPassword" placeholder="Repite tu contraseña"
-          required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300" />
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+          <label for="password" class="block text-gray-700 font-bold mb-1">{{ $t('password') }}</label>
+          <input v-model="password" type="password" id="password" :placeholder="$t('enterPassword')" required
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300" />
+        </div>
+        <div>
+          <label for="confirmPassword" class="block text-gray-700 font-bold mb-1">{{ $t('confirmPassword') }}</label>
+          <input v-model="confirmPassword" type="password" id="confirmPassword" :placeholder="$t('confirmPassword')"
+            required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300" />
+        </div>
       </div>
       <button type="submit"
         class="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200">
-        Registrarse
+        {{ $t('register') }}
       </button>
       <p class="text-center mt-4 text-gray-600">
-        ¿Ya tienes una cuenta?
-        <router-link to="/login" class="text-blue-500 hover:text-blue-700">Inicia sesión aquí</router-link>
+        {{ $t('alreadyHaveAccount') }}
+        <router-link to="/login" class="text-blue-500 hover:text-blue-700">{{ $t('login') }}</router-link>
       </p>
     </form>
   </div>
@@ -71,7 +75,7 @@ export default defineComponent({
         const result = await apiRegister(user);
         console.log("XD", result);
         console.log(result.data.username, user.password);
-        await apiLogin(result.data.username, result.data.password)
+        await apiLogin(result.data.username, result.data.password);
         localStorage.setItem('user', JSON.stringify(result.data));
         window.location.href = '/tourism';
       } catch (error) {

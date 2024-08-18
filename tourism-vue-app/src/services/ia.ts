@@ -21,13 +21,15 @@ import { OpenAI } from "openai";
 
 export const getCompletion = async (
   prompt: string,
-  language: string,
+  language: string | undefined,
   imageFile: File
 ): Promise<any> => {
   try {
     const formData = new FormData();
     formData.append("prompt", prompt);
-    formData.append("language", language);
+    if (language) {
+      formData.append("language", language);
+    }
 
     if (imageFile) {
       formData.append("image", imageFile);
