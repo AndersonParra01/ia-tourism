@@ -1,3 +1,4 @@
+import os
 from django.shortcuts import get_object_or_404, render
 import requests
 from rest_framework.decorators import api_view
@@ -105,7 +106,7 @@ def generate_image_ia(prompt):
 import requests
 
 def get_google_maps_static_image(location: str) -> str:
-    google_maps_api_key = 'AIzaSyCoByUEd2cKg5w7cHN9LJ-VHVlQduATR2Q'
+    google_maps_api_key = os.getenv('GOOGLE_MAPS_API_KEY')
     google_maps_static_url = 'https://maps.googleapis.com/maps/api/staticmap'
 
     params = {

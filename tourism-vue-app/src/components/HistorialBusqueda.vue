@@ -1,110 +1,157 @@
 <template>
     <div class="flex justify-center mt-2 w-full">
-        <!-- Contenedor Principal con una Tarjeta -->
         <div class="bg-white shadow-lg rounded-lg p-6 w-full">
-            <!-- Barra de Búsqueda -->
-            <div class="flex justify-between items-center mb-4">
-                <h1 class="text-2xl font-semibold text-gray-700">Historial de Recomendaciones</h1>
-                <div class="relative">
-                    <input type="text" v-model="searchQuery" placeholder="Buscar en el historial"
-                        class="border rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-64" />
-                    <i class="bx bx-search absolute left-3 top-2 text-gray-400"></i>
-                </div>
+            <div v-if="isLoading" class="text-center text-blue-500">
+                <i class="fas fa-spinner fa-spin mr-2"></i> Cargando...
             </div>
 
-            <!-- Filtros -->
-            <div class="flex mb-6 space-x-4">
-                <button @click="sortByDate" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
-                    Por fecha
-                </button>
-                <button @click="groupByCategory"
-                    class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">
-                    Por grupo
-                </button>
-            </div>
+            <div v-else>
+                <div class="flex justify-between items-center mb-4">
+                    <h1 class="text-2xl font-semibold text-gray-700">Historial de Recomendaciones</h1>
 
-            <!-- Lista de Historial -->
-            <div v-for="(group, date) in filteredHistory" :key="date" class="mb-8">
-                <h2 class="text-lg font-bold mb-2 text-gray-600">{{ date }}</h2>
-                <ul>
-                    <li v-for="item in group" :key="item.id"
-                        class="py-4 border-b border-gray-200 flex justify-between items-center relative">
-                        <div class="flex items-center">
-                            <input type="checkbox" class="mr-2" />
-                            <span class="text-gray-700">{{ item.time }}</span>
+                    <div class="flex items-center space-x-4">
+                        <div v-if="selectedItems.length != 0">
+                            <button @click="deleteSelectedItems"
+                                class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+                                Eliminar Seleccionados
+                            </button>
                         </div>
-                        <div class="flex items-center">
-                            <i class="bx bx-world mr-2 text-green-600"></i>
-                            <span class="text-gray-700">{{ item.description }}</span>
-                        </div>
-                        <div class="text-gray-500">{{ item.url }}</div>
 
-                        <!-- Menú de tres puntos -->
                         <div class="relative">
-                            <i @click="toggleMenu(item.id)"
-                                class="bx bx-dots-vertical-rounded text-gray-400 cursor-pointer"></i>
-                            <div v-if="menuOpen === item.id"
-                                class="absolute right-0 bg-white shadow-md rounded-md mt-2 p-2 z-50">
-                                <button @click="deleteItem(item.id)"
-                                    class="block w-full text-left text-red-500 hover:bg-gray-100 px-4 py-2">
-                                    Eliminar
-                                </button>
-                            </div>
+                            <input type="text" v-model="searchQuery" placeholder="Buscar en el historial"
+                                class="border rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-64" />
+                            <i
+                                class="bx bx-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                         </div>
-                    </li>
-                </ul>
+                    </div>
+                </div>
+
+                <div v-for="(group, date) in filteredHistory" :key="date" class="mb-8">
+                    <span class="block text-2xl">
+                        {{ new Date(date).toLocaleDateString('es-ES', {
+                            day: '2-digit', month: 'long', year: 'numeric'
+                        }) }}
+                        a las
+                        {{ new Date(date).toLocaleTimeString('es-ES', {
+                            hour: '2-digit', minute: '2-digit', second:
+                                '2-digit'
+                        }) }}
+                    </span>
+                    <ul>
+                        <li v-for="item in group" :key="item.id"
+                            class="py-4 border-b border-gray-200 flex justify-between items-center relative">
+                            <div class="flex items-center">
+                                <input type="checkbox" v-model="selectedItems" :value="item.id" class="mr-2" />
+                                <span class="text-gray-700">{{ item.time }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="bx bx-world mr-2 text-green-600"></i>
+                                <span class="text-gray-700">{{ item.description_place }}</span>
+                            </div>
+                            <div class="text-gray-500">{{ item.url }}</div>
+
+                            <div class="relative">
+                                <i @click="toggleMenu(item.id)"
+                                    class="bx bx-dots-vertical-rounded text-gray-400 cursor-pointer"></i>
+                                <div v-if="menuOpen === item.id"
+                                    class="absolute right-0 bg-white shadow-md rounded-md mt-2 p-2 z-50">
+                                    <button @click="deleteItem(item.id)"
+                                        class="block w-full text-left text-red-500 hover:bg-gray-100 px-4 py-2">
+                                        Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from 'vue';
+import { defineComponent, ref, computed, onMounted } from 'vue';
+import { Place, fetchUserPlaceDelete, fetchUserPlaces } from '@/services/user';
 
 export default defineComponent({
     setup() {
         const searchQuery = ref<string>('');
-        const history = ref([
-            { id: 1, time: '17:10', description: 'Lugar 1', url: 'localhost:3000', date: 'Hoy' },
-            { id: 2, time: '16:58', description: 'Lugar 2', url: 'localhost:3000', date: 'Hoy' },
-            { id: 3, time: '16:50', description: 'Lugar 3', url: 'localhost:3000', date: 'Ayer' },
-            // Más datos de ejemplo aquí...
-        ]);
+        const history = ref<Place[]>([]);
+        const menuOpen = ref<number | null>(null);
+        const selectedItems = ref<number[]>([]);
+        const isLoading = ref<boolean>(true); // Variable de estado para la carga
 
-        const menuOpen = ref<number | null>(null); // Controla qué menú desplegable está abierto
+        const loadPlaces = async () => {
+            try {
+                const userSave = JSON.parse(localStorage.getItem('user') || '{}');
+                const user = await fetchUserPlaces(userSave.id);
+                history.value = user.places;
+            } catch (error) {
+                console.error('Error al obtener los lugares:', error);
+            } finally {
+                isLoading.value = false; // Finaliza la carga
+            }
+        };
 
         const filteredHistory = computed(() => {
             if (!searchQuery.value) return groupByDate(history.value);
             return groupByDate(
                 history.value.filter(item =>
-                    item.description.toLowerCase().includes(searchQuery.value.toLowerCase())
+                    item.description_place && item.description_place.toLowerCase().includes(searchQuery.value.toLowerCase())
                 )
             );
         });
 
-        const groupByDate = (items: any[]) => {
-            return items.reduce((acc: any, item: any) => {
-                if (!acc[item.date]) acc[item.date] = [];
-                acc[item.date].push(item);
+        const groupByDate = (items: Place[]) => {
+            return items.reduce((acc: any, item: Place) => {
+                if (!acc[item.created_at]) acc[item.created_at] = [];
+                acc[item.created_at].push(item);
                 return acc;
             }, {});
         };
 
         const toggleMenu = (id: number) => {
-            menuOpen.value = menuOpen.value === id ? null : id; // Alterna el estado del menú
+            menuOpen.value = menuOpen.value === id ? null : id;
         };
 
-        const deleteItem = (id: number) => {
-            history.value = history.value.filter(item => item.id !== id); // Elimina el ítem del historial
-            menuOpen.value = null; // Cierra el menú después de eliminar
+        const deleteItem = async (id: number) => {
+            try {
+                const userSave = JSON.parse(localStorage.getItem('user') || '{}');
+                await fetchUserPlaceDelete(userSave.id, id);
+                history.value = history.value.filter(item => item.id !== id);
+                menuOpen.value = null;
+                loadPlaces();
+            } catch (error) {
+                console.error('Error al eliminar el lugar:', error);
+            }
         };
+
+        const deleteSelectedItems = async () => {
+            try {
+                const userSave = JSON.parse(localStorage.getItem('user') || '{}');
+                for (const id of selectedItems.value) {
+                    await fetchUserPlaceDelete(userSave.id, id);
+                }
+                loadPlaces();
+                selectedItems.value = [];
+            } catch (error) {
+                console.error('Error al eliminar los lugares:', error);
+            }
+        };
+
+        onMounted(() => {
+            loadPlaces();
+        });
 
         return {
             searchQuery,
             filteredHistory,
             toggleMenu,
             deleteItem,
-            menuOpen
+            menuOpen,
+            selectedItems,
+            deleteSelectedItems,
+            isLoading // Devuelve el estado de carga
         };
     }
 });
@@ -113,6 +160,10 @@ export default defineComponent({
 <style scoped>
 .input {
     padding-left: 2.5rem;
-    /* Espacio para el ícono de búsqueda */
+}
+
+h2 {
+    font-size: 1.2rem;
+    color: #1E3A8A;
 }
 </style>

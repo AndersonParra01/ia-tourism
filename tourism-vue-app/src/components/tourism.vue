@@ -14,19 +14,29 @@
             </button>
         </div>
 
-        <div v-if="activeTab === 'general'" class="flex justify-center items-center mb-4 p-4">
-            <input v-model="prompt" type="text" placeholder="Selecciona tu lugar turístico"
-                class="border border-gray-300 rounded-l p-3 w-full max-w-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                @keydown.enter="send" />
-            <button @click="send"
-                class="bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-r transition-colors duration-300">
-                Enviar
-            </button>
-            <button @click="startRecognition"
-                class="ml-2 bg-gray-500 hover:bg-gray-600 text-white p-3 rounded transition-colors duration-300">
-                🎤
-            </button>
+        <div v-if="activeTab === 'general'" class="flex flex-col items-center justify-center mb-4 p-4">
+            <div class="mb-6 text-center flex justify-center items-center">
+                <label for="language" class="text-lg font-semibold text-gray-700 mb-2">Seleccione su idioma:</label>
+                <select v-model="language" id="language" class="ml-2 p-2 border rounded bg-gray-50">
+                    <option value="en">Inglés</option>
+                    <option value="es">Español </option>
+                </select>
+            </div>
+            <div class="flex items-center w-full max-w-md">
+                <input v-model="prompt" type="text" placeholder="Selecciona tu lugar turístico"
+                    class="border border-gray-300 rounded-l p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    @keydown.enter="send" />
+                <button @click="send"
+                    class="bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-r transition-colors duration-300">
+                    Enviar
+                </button>
+                <button @click="startRecognition"
+                    class="ml-2 bg-gray-500 hover:bg-gray-600 text-white p-3 rounded transition-colors duration-300">
+                    🎤
+                </button>
+            </div>
         </div>
+
 
         <div v-if="activeTab === 'favorites'" class="text-center text-gray-600">
             <Recomendacion />
