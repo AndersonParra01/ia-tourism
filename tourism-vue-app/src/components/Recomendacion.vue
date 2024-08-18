@@ -28,25 +28,35 @@
       <div class="w-full mb-4">
         <select v-model="selectedOption"
           class="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring focus:border-blue-300">
-          <option v-for="option in options" :key="option" :value="option">{{ option }}</option>
+          <option v-for="option in options" :key="option" :value="option">
+            {{ option }}
+          </option>
         </select>
       </div>
-      <button @click="getPlaces"
-        class="w-full px-4 py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-200">
-        {{ $t('searchButton') }}
-      </button>
+      <div class="flex w-full space-x-2">
+        <button @click="getPlaces"
+          class="w-full px-4 py-3 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-200">
+          {{ $t("searchButton") }}
+        </button>
+        <button @click="clearInputs"
+          class="w-full px-4 py-3 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-700 transition duration-200">
+          {{ $t("clearButton") }}
+        </button>
+      </div>
     </div>
 
     <div v-if="loading" class="text-center text-gray-600 mt-4">
-      {{ $t('loading') }}
+      {{ $t("loading") }}
     </div>
     <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8 w-full max-w-5xl">
       <div v-for="card in cards" :key="card.ciudad"
         class="bg-white p-6 rounded-lg shadow hover:shadow-lg transition duration-200 cursor-pointer"
         @click="getPlaceFromRecommendation(card)" :class="{ disabled: globalClicked }">
-        <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ card.ciudad }}</h3>
-        <p class="text-gray-600">{{ $t('expense') }}: {{ card.gasto }}</p>
-        <p class="text-gray-600">{{ $t('time') }}: {{ card.tiempo }}</p>
+        <h3 class="text-xl font-semibold text-gray-800 mb-2">
+          {{ card.ciudad }}
+        </h3>
+        <p class="text-gray-600">{{ $t("expense") }}: {{ card.gasto }}</p>
+        <p class="text-gray-600">{{ $t("time") }}: {{ card.tiempo }}</p>
         <p class="text-gray-600">{{ card.descripcion }}</p>
       </div>
     </div>
@@ -54,7 +64,7 @@
     <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
       @click="handleClickOutside">
       <div class="bg-white rounded-lg shadow-lg p-8 w-full max-w-3xl relative" @click.stop
-        style="max-height: 90vh; overflow-y: auto;">
+        style="max-height: 90vh; overflow-y: auto">
         <button class="absolute top-2 right-2 text-gray-600 hover:text-gray-800 focus:outline-none" @click="closeModal">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
             stroke-width="2">
@@ -62,76 +72,211 @@
           </svg>
         </button>
 
-        <h3 class="text-2xl font-bold mb-4 text-gray-800 text-center">{{ selectedCard.ciudad }}</h3>
+        <h3 class="text-2xl font-bold mb-4 text-gray-800 text-center">
+          {{ $t("destineTuristico") }} "{{ selectedCard.ciudad }}"
+        </h3>
 
-        <div class="grid grid-cols-1 md:grid-cols-2  space-y-4">
-          <div v-if="selectedCard.transporte">
-            <p class="text-gray-700 strong ">
-              <strong>
-                {{ $t('details.transportExpense') }}
-              </strong>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div v-if="selectedCard.transporte" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.transportExpense") }}
             </p>
-            <ul class="list-disc list-inside text-gray-700 pl-4">
-              <li v-for="item in selectedCard.transporte" :key="item">{{ item }}</li>
+            <ul class="list-disc list-inside text-gray-700">
+              <li v-for="item in selectedCard.transporte" :key="item">
+                {{ item }}
+              </li>
             </ul>
           </div>
 
-          <p v-if="selectedCard.hotel" class="text-gray-700"><b>{{ $t('details.lodgingExpense') }}</b> {{
-            selectedCard.hotel }}</p>
-          <p v-if="selectedCard.comida" class="text-gray-700"><b>{{ $t('details.foodExpense') }}</b> {{
-            selectedCard.comida }}</p>
-          <p v-if="selectedCard.documentacion" class="text-gray-700"><b>{{ $t('details.documentation') }}</b> {{
-            selectedCard.documentacion }}</p>
-          <p v-if="selectedCard.duracion" class="text-gray-700"><b>{{ $t('details.tripDuration') }}</b> {{
-            selectedCard.duracion }}</p>
-          <p v-if="selectedCard.descripcion" class="text-gray-700"><b>{{ $t('description') }}</b> {{
-            selectedCard.descripcion }}</p>
-          <p v-if="selectedCard.lugares" class="text-gray-700"><b>{{ $t('details.places') }}</b> {{
-            selectedCard.lugares.join(', ') }}</p>
-          <p v-if="selectedCard.transp_local" class="text-gray-700"><b>{{ $t('details.localTransport') }}</b> {{
-            selectedCard.transp_local }}</p>
-          <p v-if="selectedCard.clima" class="text-gray-700"><b>{{ $t('details.climate') }}</b> {{ selectedCard.clima }}
-          </p>
-          <p v-if="selectedCard.seguridad" class="text-gray-700"><b>{{ $t('details.security') }}</b> {{
-            selectedCard.seguridad }}</p>
-          <p v-if="selectedCard.idioma" class="text-gray-700"><b>{{ $t('details.language') }}</b> {{ selectedCard.idioma
-            }}</p>
-          <p v-if="selectedCard.moneda" class="text-gray-700"><b>{{ $t('details.currency') }}</b> {{ selectedCard.moneda
-            }}</p>
-          <p v-if="selectedCard.costumbres" class="text-gray-700"><b>{{ $t('details.customs') }}</b> {{
-            selectedCard.costumbres }}</p>
-          <p v-if="selectedCard.gastronomia" class="text-gray-700"><b>{{ $t('details.gastronomy') }}</b> {{
-            selectedCard.gastronomia }}</p>
-          <p v-if="selectedCard.cultura" class="text-gray-700"><b>{{ $t('details.culture') }}</b> {{
-            selectedCard.cultura }}</p>
-          <p v-if="selectedCard.historia" class="text-gray-700"><b>{{ $t('details.history') }}</b> {{
-            selectedCard.historia }}</p>
-          <p v-if="selectedCard.turismo" class="text-gray-700"><b>{{ $t('details.tourism') }}</b> {{
-            selectedCard.turismo }}</p>
-          <p v-if="selectedCard.compras" class="text-gray-700"><b>{{ $t('details.shopping') }}</b> {{
-            selectedCard.compras }}</p>
-          <p v-if="selectedCard.vida_nocturna" class="text-gray-700"><b>{{ $t('details.nightlife') }}</b> {{
-            selectedCard.vida_nocturna }}</p>
-          <p v-if="selectedCard.transporte_local" class="text-gray-700"><b>{{ $t('details.localTransportDetails') }}</b>
-            {{ selectedCard.transporte_local }}</p>
-          <p v-if="selectedCard.alojamiento" class="text-gray-700"><b>{{ $t('details.accommodation') }}</b> {{
-            selectedCard.alojamiento }}</p>
-          <p v-if="selectedCard.restaurantes" class="text-gray-700"><b>{{ $t('details.restaurants') }}</b> {{
-            selectedCard.restaurantes }}</p>
-          <p v-if="selectedCard.actividades" class="text-gray-700"><b>{{ $t('details.activities') }}</b> {{
-            selectedCard.actividades }}</p>
-          <p v-if="selectedCard.consejos" class="text-gray-700"><b>{{ $t('details.tips') }}</b> {{ selectedCard.consejos
-            }}</p>
-          <p v-if="selectedCard.emergencias" class="text-gray-700"><b>{{ $t('details.emergencies') }}</b> {{
-            selectedCard.emergencias }}</p>
-          <p v-if="selectedCard.telefono" class="text-gray-700"><b>{{ $t('details.phone') }}</b> {{
-            selectedCard.telefono }}</p>
-          <p v-if="selectedCard.salud" class="text-gray-700"><b>{{ $t('details.health') }}</b> {{ selectedCard.salud }}
-          </p>
-          <p v-if="selectedCard.seguro" class="text-gray-700"><b>{{ $t('details.insurance') }}</b> {{
-            selectedCard.seguro }}</p>
-          <p v-if="selectedCard.comunicacion" class="text-gray-700"><b>{{ $t('details.communication') }}</b> {{
-            selectedCard.comunicacion }}</p>
+          <div v-if="selectedCard.hotel" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.lodgingExpense") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.hotel }}</p>
+          </div>
+
+          <div v-if="selectedCard.comida" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.foodExpense") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.comida }}</p>
+          </div>
+
+          <div v-if="selectedCard.documentacion" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.documentation") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.documentacion }}</p>
+          </div>
+
+          <div v-if="selectedCard.duracion" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.tripDuration") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.duracion }}</p>
+          </div>
+
+          <div v-if="selectedCard.descripcion" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">{{ $t("description") }}</p>
+            <p class="text-gray-700">{{ selectedCard.descripcion }}</p>
+          </div>
+
+          <div v-if="selectedCard.lugares" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.places") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.lugares.join(", ") }}</p>
+          </div>
+
+          <div v-if="selectedCard.transp_local" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.localTransport") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.transp_local }}</p>
+          </div>
+
+          <div v-if="selectedCard.clima" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.climate") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.clima }}</p>
+          </div>
+
+          <div v-if="selectedCard.seguridad" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.security") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.seguridad }}</p>
+          </div>
+
+          <div v-if="selectedCard.idioma" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.language") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.idioma }}</p>
+          </div>
+
+          <div v-if="selectedCard.moneda" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.currency") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.moneda }}</p>
+          </div>
+
+          <div v-if="selectedCard.costumbres" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.customs") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.costumbres }}</p>
+          </div>
+
+          <div v-if="selectedCard.gastronomia" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.gastronomy") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.gastronomia }}</p>
+          </div>
+
+          <div v-if="selectedCard.cultura" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.culture") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.cultura }}</p>
+          </div>
+
+          <div v-if="selectedCard.historia" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.history") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.historia }}</p>
+          </div>
+
+          <div v-if="selectedCard.turismo" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.tourism") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.turismo }}</p>
+          </div>
+
+          <div v-if="selectedCard.compras" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.shopping") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.compras }}</p>
+          </div>
+
+          <div v-if="selectedCard.vida_nocturna" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.nightlife") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.vida_nocturna }}</p>
+          </div>
+
+          <div v-if="selectedCard.transporte_local" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.localTransportDetails") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.transporte_local }}</p>
+          </div>
+
+          <div v-if="selectedCard.alojamiento" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.accommodation") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.alojamiento }}</p>
+          </div>
+
+          <div v-if="selectedCard.restaurantes" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.restaurants") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.restaurantes }}</p>
+          </div>
+
+          <div v-if="selectedCard.actividades" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.activities") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.actividades }}</p>
+          </div>
+
+          <div v-if="selectedCard.consejos" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">{{ $t("details.tips") }}</p>
+            <p class="text-gray-700">{{ selectedCard.consejos }}</p>
+          </div>
+
+          <div v-if="selectedCard.emergencias" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.emergencies") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.emergencias }}</p>
+          </div>
+
+          <div v-if="selectedCard.telefono" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">{{ $t("details.phone") }}</p>
+            <p class="text-gray-700">{{ selectedCard.telefono }}</p>
+          </div>
+
+          <div v-if="selectedCard.salud" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.health") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.salud }}</p>
+          </div>
+
+          <div v-if="selectedCard.seguro" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.insurance") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.seguro }}</p>
+          </div>
+
+          <div v-if="selectedCard.comunicacion" class="bg-gray-100 p-4 rounded-lg shadow">
+            <p class="text-gray-700 font-semibold">
+              {{ $t("details.communication") }}
+            </p>
+            <p class="text-gray-700">{{ selectedCard.comunicacion }}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -139,15 +284,41 @@
 </template>
 
 <script>
-import { getTouristPlaces, getEspecificCityData, fetchCities } from '../services/ia';
+import {
+  getTouristPlaces,
+  getEspecificCityData,
+  fetchCities,
+} from "../services/ia";
+import { defineComponent, onMounted, ref, watch } from "vue";
 
 export default {
+  setup() {
+    const origen = ref("");
+    const destino = ref("");
+    const selectedOption = ref("Nacional");
+
+    const clearInputs = () => {
+      origen.value = "";
+      destino.value = "";
+    };
+
+    return {
+      origen,
+      destino,
+      selectedOption,
+      clearInputs,
+    };
+  },
   data() {
     return {
-      origen: '',
-      destino: '',
-      selectedOption: 'Nacional',
-      options: ['Nacional', 'Economico', 'Historico', 'Cultural', 'Diversión', 'Internacional'],
+      options: [
+        "Nacional",
+        "Economico",
+        "Historico",
+        "Cultural",
+        "Diversión",
+        "Internacional",
+      ],
       touristPlaces: [],
       card: [],
       loading: false,
@@ -164,7 +335,7 @@ export default {
       this.showModal = true;
     },
     closeModal() {
-      console.log('Cerrando modal');
+      console.log("Cerrando modal");
       this.showModal = false;
     },
     handleClickOutside(event) {
@@ -176,14 +347,22 @@ export default {
     async getPlaces() {
       this.loading = true;
       try {
-        if (this.origen === '') {
-          alert('Por favor, ingrese un origen');
+        if (this.origen === "") {
+          alert("Por favor, ingrese un origen");
           return;
         }
 
-        if (this.origen !== '' && this.destino !== '') {
-          console.log('Destino:', this.destino);
-          const modalData = await getEspecificCityData(this.origen, this.destino);
+        if (this.destino === "") {
+          alert("Por favor, ingrese un destino");
+          return;
+        }
+
+        if (this.origen !== "" && this.destino !== "") {
+          console.log("Destino:", this.destino);
+          const modalData = await getEspecificCityData(
+            this.origen,
+            this.destino
+          );
           this.openModal(modalData);
           return;
         }
@@ -191,7 +370,7 @@ export default {
         const places = await getTouristPlaces(this.origen, this.selectedOption);
         this.cards = places;
       } catch (error) {
-        console.error('Hubo un error:', error);
+        console.error("Hubo un error:", error);
       } finally {
         this.loading = false;
       }
@@ -207,12 +386,15 @@ export default {
         this.loading = true;
         this.globalClicked = true;
         try {
-          const modalData = await getEspecificCityData(this.origen, card.ciudad);
-          console.log('Modal Data:', modalData);
+          const modalData = await getEspecificCityData(
+            this.origen,
+            card.ciudad
+          );
+          console.log("Modal Data:", modalData);
           this.openModal(modalData);
           return;
         } catch (error) {
-          console.error('Hubo un error:', error);
+          console.error("Hubo un error:", error);
         } finally {
           this.loading = false;
           this.globalClicked = false;
@@ -220,12 +402,12 @@ export default {
       }
     },
     selectOrigen(city) {
-      console.log('origen', city);
+      console.log("origen", city);
       this.origen = city;
       this.citiesO = []; // Limpia las sugerencias después de seleccionar
     },
     selectDestino(city) {
-      console.log('destino', city);
+      console.log("destino", city);
       this.destino = city;
       this.citiesD = []; // Limpia las sugerencias después de seleccionar
     },

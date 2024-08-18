@@ -2,7 +2,9 @@
     <div class="flex justify-center mt-2 w-full">
         <div class="bg-white shadow-lg rounded-lg p-6 w-full">
             <div class="flex justify-between items-center mb-4">
-                <h1 class="text-2xl font-semibold text-gray-700">Historial de Recomendaciones</h1>
+                <h1 class="text-2xl font-semibold text-gray-700">
+                    {{ $t('recommendationHistory') }}
+                </h1>
 
                 <div class="flex items-center space-x-4">
                     <div v-if="selectedItems.length != 0">
@@ -13,7 +15,7 @@
                     </div>
 
                     <div class="relative">
-                        <input type="text" v-model="searchQuery" placeholder="Buscar en el historial"
+                        <input type="text" v-model="searchQuery" :placeholder="$t('searchHistory')"
                             class="border rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-64" />
                         <i class="bx bx-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                     </div>
@@ -21,7 +23,7 @@
             </div>
 
             <div v-if="isLoading" class="text-center text-blue-500">
-                <i class="fas fa-spinner fa-spin mr-2"></i> Cargando...
+                <i class="fas fa-spinner fa-spin mr-2"></i> {{ $t('loading') }}
             </div>
 
             <div v-else>

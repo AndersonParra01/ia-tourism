@@ -128,19 +128,18 @@ export async function getTouristPlaces(
 
 export async function getEspecificCityData(
   origen: string,
-  destino: string
+  destino: string,
+  idioma: string
 ): Promise<CiudadInfo> {
   let openai = new OpenAI({
     apiKey: process.env.VUE_APP_CHAT_GPT_KEY,
     dangerouslyAllowBrowser: true,
   });
 
-  const completion = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [
-      {
-        role: "system",
-        content: `Tu eres un asistente turistico que das recomendaciones de lugares turísticos en donde el usuario te mandara un nombre de una ciudad de origen o inicio y de una ciudad destino. 
+  let instrucciones: string = "";
+
+  if (idioma === "es") {
+    instrucciones = `Tu eres un asistente turistico que das recomendaciones de lugares turísticos en donde el usuario te mandara un nombre de una ciudad de origen o inicio y de una ciudad destino. 
                   Como asistente debes proporcionar toda la informacion turistica que existe en la ciudad de destino. Pero tambien es necesario saber la ciudad de origen para poder dar una recomendacion mas precisa sobre los precios, tiempos y lugares de paso.
                   Tu respuesta sera un string de un arreglo de objetos json en este formato [{}, {}, {}], nada mas que eso lista para aplicar un JSON.parse 
                   A continucion te muestro los campos que enviaras, Primero estara la importancia del campo que esta rodeado de *, luego el nombre del campo estara entre () y si esa variable tiene mas campos estaras rodeados de [], 
@@ -177,7 +176,54 @@ export async function getEspecificCityData(
                   En caso de que no consigas informacion de algunos de los campos es preferible de que no envies el campo, recuerda no inventar informacion,
                   Para los casos como restaurantes, hoteles, lugares de compras es preferible que listes los nombres especificos.
                   Retornas solo un objeto json con los campos anteriores, no un arreglo de objetos json
-                  El usuario te enviara la informacion de esta manera Origen,Destino`,
+                  El usuario te enviara la informacion de esta manera Origen,Destino`;
+  } else {
+    instrucciones = `You are a tourist assistant who provides recommendations for tourist destinations. The user will send you the name of a city of origin or start and a destination city. 
+As an assistant, you must provide all the tourist information available for the destination city. However, it is also necessary to know the city of origin to give a more accurate recommendation regarding prices, travel times, and stopover locations.
+Your response should be a string representing an array of JSON objects in the format [{}, {}, {}], ready for JSON.parse. 
+Below are the fields you will send. First, the importance of the field is enclosed in *, followed by the field name in (), and if that variable has more fields, they will be enclosed in [].
+According to the importance:
+*High* => The field is mandatory and will take the tokens needed to give a complete description of the field.
+*Medium* => The field is mandatory, but its description should be brief and precise.
+*Low* => The field is optional and will only be included if there are tokens left after defining the High and Medium importance fields. If the High and Medium fields take up more information, the Low importance fields will not be included.
+Here are the fields you will send: 
+*High*(city) = A string with the name of the destination city.
+*High*(transportation) = An array of strings showing transportation options by bus, plane, and car, including price details and travel time. If one of the values is not feasible, put: Not feasible. Calculate one-way trip costs. If you have information on where to take the transportation or the company offering the service, include it.
+*High*(hotel) = The cost of the hotel or accommodation, including prices for 2 to 5-star hotels.
+*High*(food) = The cost of food depending on the length of stay. Include details such as breakfast, lunch, and dinner.
+*High*(documentation) = If any documentation is required to enter the city, such as a passport or visa, include the cost based on the country of origin.
+*High*(duration) = A string showing the recommended length of stay and the best seasons to visit. Include travel time broken down by transportation type.
+*High*(description) = A string describing the city, its tourist importance, and other information of interest to someone planning a trip.
+*High*(places) = An array of strings listing all the places to visit and activities to do.
+*Medium*(local_transport) = A string showing the available transportation options within the city (metro, bus, taxi, etc.) and their prices, with the most recent data available.
+*High*(climate) = A string describing the city's climate and the best seasons to visit.
+*Medium*(security) = A string showing the city's security situation and recommendations for tourists.
+*Medium*(language) = A string showing the official language of the city and other common languages.
+*High*(currency) = A string showing the city's official currency and whether currency exchange is needed.
+*Low*(customs) = A string describing the city's customs and traditions.
+*Medium*(gastronomy) = A string listing typical dishes and food recommended during the visit.
+*Low*(shopping) = A string listing popular shopping locations and typical products to buy.
+*Low*(nightlife) = A string listing popular nightlife areas and activities.
+*High*(accommodation) = A string listing the most popular accommodations and approximate prices. Include specific names.
+*High*(restaurants) = A string listing the most popular restaurants and recommended dishes. Include specific restaurant names.
+*Medium*(activities) = A string listing the most popular activities and how to participate in them.
+*Low*(tips) = A string providing useful tips for tourists visiting the city.
+*Medium*(phone) = A string listing emergency and other important phone numbers in the city.
+*Medium*(health) = A string showing the health situation in the city and whether vaccinations are necessary before traveling.
+*Low*(communication) = A string explaining how to communicate with locals and whether it's necessary to learn basic phrases.
+Ensure the strings do not contain spaces or line breaks. Make sure it is a well-formed JSON and does not exceed 4000 tokens.
+If you cannot obtain information for some fields, it is preferable to omit the field. Do not invent information.
+For cases like restaurants, hotels, and shopping locations, it is preferable to list specific names.
+Return only one JSON object with the fields above, not an array of JSON objects.
+The user will send the information in this format: Origin,Destination.`;
+  }
+
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [
+      {
+        role: "system",
+        content: instrucciones,
       },
       {
         role: "user",
@@ -193,7 +239,7 @@ export async function getEspecificCityData(
       },
     ],
     max_tokens: 4000,
-    temperature: 0.7,
+    temperature: 0.8,
   });
 
   console.log(completion);
@@ -206,13 +252,10 @@ export async function getEspecificCityData(
   let resultado: any;
 
   if (Array.isArray(data)) {
-    // If data is an array, select the first object
     resultado = data.length > 0 ? data[0] : null;
   } else if (typeof data === "object" && data !== null) {
-    // If data is an object, save it directly
     resultado = data;
   } else {
-    // Handle cases where data is neither an array nor an object
     resultado = {};
   }
   console.log(resultado);
@@ -232,21 +275,19 @@ export async function fetchCities(cityName: string) {
       "https://api.swiftcomplete.com/v1/places/",
       {
         params: {
-          key: process.env.VUE_APP_GEO_CITIES, // Clave de API
-          text: cityName, // Texto de búsqueda
-          biasTowards: "51.50532341149335,-0.087890625", // Coordenadas para el sesgo de ubicación
-          resultOrdering: "location_biasing", // Orden de los resultados
-          maxResults: 5, // Número máximo de resultados
+          key: process.env.VUE_APP_GEO_CITIES,
+          text: cityName,
+          biasTowards: "51.50532341149335,-0.087890625",
+          resultOrdering: "location_biasing",
+          maxResults: 5,
         },
       }
     );
 
-    // Extraer solo los nombres de las ciudades de los resultados
     citiesList = response.data.map(
       (result) => result.primary.text + ", " + result.secondary.text
     );
 
-    // Eliminar duplicados y valores nulos
     citiesList = [...new Set(citiesList.filter((city) => city))];
   } catch (error) {
     citiesList = [];

@@ -84,6 +84,8 @@ const messages = {
     loginRequired: "You must be logged in to save the consultation",
     saveSuccess: "Saved successfully",
     saveError: "Error saving history",
+    clearButton: "Clear",
+    destineTuristico: "Tourist Destination",
   },
   es: {
     welcome: "OpenAI Asistente de Turismo Virtual Ec",
@@ -168,6 +170,8 @@ const messages = {
     loginRequired: "Debes iniciar sesión para guardar la consulta",
     saveSuccess: "Guardado correctamente",
     saveError: "Error al registrar historial",
+    clearButton: "Limpiar",
+    destineTuristico: "Destino Turístico",
   },
 };
 
