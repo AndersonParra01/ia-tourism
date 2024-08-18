@@ -9,6 +9,7 @@ export interface Place {
   hotels: string;
   regions: string;
   location: string;
+  created_at: string;
 }
 import {
   RecomendacionesCards,
@@ -22,7 +23,7 @@ export const getCompletion = async (
   prompt: string,
   language: string,
   imageFile: File
-): Promise<Place> => {
+): Promise<any> => {
   try {
     const formData = new FormData();
     formData.append("prompt", prompt);
@@ -46,6 +47,11 @@ export const getCompletion = async (
 
     const result = await response.json();
 
+    console.log("SERVICE", result);
+    if (result.message) {
+      return result;
+    }
+
     const place: Place = {
       description_place:
         result.description_place || "Descripción no disponible",
@@ -59,6 +65,7 @@ export const getCompletion = async (
       hotels: "",
       regions: result.regions || "Regiones no disponibles",
       location: result.location || "Ubicación no disponible",
+      created_at: result.created_at || "Fecha de creación no disponible",
     };
     console.log("RESPUESTA oOK: ", place);
     return place;

@@ -1,8 +1,15 @@
 <template>
     <div class="p-8 bg-gray-50 min-h-screen">
-        <h2 class="text-4xl font-bold mb-8 text-center text-blue-700">Información del Lugar</h2>
+        <h2 class="text-4xl font-bold mb-8 text-center text-blue-700">
+            {{ message ? 'Respuesta del Asistente' : 'Información del Lugar' }}
+        </h2>
+        <div v-if="message"
+            class="bg-white shadow-lg rounded-xl p-8 flex flex-col justify-between h-full transition-transform transform hover:scale-105 hover:shadow-xl">
+            <h3 class="text-xl font-bold mb-4 text-red-600">Mensaje</h3>
+            <p class="text-gray-700">{{ message }}</p>
+        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <!-- Tarjeta de información principal -->
             <div class="col-span-1 md:col-span-2 lg:col-span-3">
                 <div tabindex="0"
@@ -115,6 +122,10 @@ export default defineComponent({
                 regions?: string;
             }>,
             required: true,
+        },
+        message: {
+            type: String,
+            default: null,
         },
     },
     methods: {

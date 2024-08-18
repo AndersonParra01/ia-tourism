@@ -60,7 +60,7 @@ def get_completion(request):
 
         parts = content.split('\n\n')
         if len(parts) < 5:
-            return Response({'error': 'Respuesta incompleta de OpenAI'}, status=400)
+            return Response({'message': content}, status=200)
 
 
         description_place = parts[0]

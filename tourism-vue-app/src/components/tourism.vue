@@ -46,7 +46,7 @@
             <WaitComponent />
         </div>
 
-        <PlaceDetails v-if="isDataReady" :place="selectedPlace" />
+        <PlaceDetails v-if="isDataReady" :place="selectedPlace" :message="message" />
     </div>
 </template>
 
@@ -77,7 +77,8 @@ export default defineComponent({
             map_of_tourist_places_in_ecuador: "",
             hotels: "",
             regions: "",
-            location: ""
+            location: "",
+            created_at: ""
         });
         const imageFile = ref<File>(new File([], ''));
         const activeTab = ref<'general' | 'favorites'>('general');
@@ -107,7 +108,13 @@ export default defineComponent({
             try {
                 isDataReady.value = false;
                 isLoading.value = true;
-                const result: Place = await getCompletion(prompt.value, language, imageFile.value || null);
+                const result = await getCompletion(prompt.value, language, imageFile.value || null);
+                if (result.message) {
+                    message.value = result.message;
+                    isLoading.value = false;
+                    isDataReady.value = true;
+                    return;
+                }
                 console.log("XD", result);
 
                 selectedPlace.value = result;
