@@ -86,6 +86,7 @@ const messages = {
     saveError: "Error saving history",
     clearButton: "Clear",
     destineTuristico: "Tourist Destination",
+    save: "Save",
   },
   es: {
     welcome: "OpenAI Asistente de Turismo Virtual Ec",
@@ -172,6 +173,7 @@ const messages = {
     saveError: "Error al registrar historial",
     clearButton: "Limpiar",
     destineTuristico: "Destino Turístico",
+    save: "Guardar",
   },
 };
 

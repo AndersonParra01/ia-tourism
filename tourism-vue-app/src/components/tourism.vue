@@ -117,6 +117,10 @@ export default defineComponent({
 
         const send = async () => {
             try {
+                if (!prompt.value) {
+                    alert("Por favor, ingrese un lugar turístico del Ecuador");
+                    return;
+                }
                 message.value = '';
                 isDataReady.value = false;
                 isLoading.value = true;
@@ -167,6 +171,30 @@ export default defineComponent({
                     }
                     send();
                 }, 2000);
+            }
+        });
+
+        watch(prompt, (newValue) => {
+            if (newValue === "") {
+                console.log("El input está vacío");
+                message.value = '';
+                isDataReady.value = false;
+                selectedPlace.value = {
+                    description_place: "",
+                    image: "",
+                    typical_food: "",
+                    languages: "",
+                    traditional_music: "",
+                    city_tourist_map: "",
+                    map_of_tourist_places_in_ecuador: "",
+                    hotels: "",
+                    regions: "",
+                    location: "",
+                    created_at: ""
+                };
+                response.value = "";
+                isLoading.value = false;
+                imageFile.value = new File([], '');
             }
         });
 

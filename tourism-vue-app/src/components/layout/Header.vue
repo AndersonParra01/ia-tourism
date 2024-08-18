@@ -97,6 +97,8 @@ export default {
         const logout = () => {
             localStorage.removeItem('user');
             isUserLoggedIn.value = false;
+            localStorage.removeItem('selectedLanguage');
+            localStorage.removeItem('activeTab');
             window.location.href = '/login';
 
         };

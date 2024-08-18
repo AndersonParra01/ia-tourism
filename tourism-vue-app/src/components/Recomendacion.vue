@@ -79,7 +79,7 @@
         <div class="flex justify-end m-4">
           <button @click="saveInfo"
             class="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow">
-            Guardar
+            {{ $t("save") }}
           </button>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -300,8 +300,11 @@ import {
 import { defineComponent, onMounted, ref, watch } from "vue";
 import { apiPlaceCreate } from "./../services/place";
 import { fetchUserPlace } from "./../services/user";
+import { useRouter } from 'vue-router';
 export default {
   setup() {
+    const router = useRouter();
+
     const origen = ref("");
     const destino = ref("");
     const selectedOption = ref("Nacional");
@@ -316,6 +319,7 @@ export default {
       destino,
       selectedOption,
       clearInputs,
+      router
     };
   },
   data() {
@@ -434,12 +438,17 @@ export default {
 
     async saveInfo() {
       try {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!user.id) {
+          alert('No puede guardar información sin registrarse');
+          this.router.push('/register');
+          return;
+        }
         console.log('Información a guardar:', this.selectedCard);
         const dataToSave = this.convertObjectToString(this.selectedCard);
         const newDetail = await apiPlaceCreate({
           especific_destination: dataToSave,
         })
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
         setTimeout(async () => {
           await fetchUserPlace(user.id, newDetail.id);
         }, 1000);

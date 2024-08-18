@@ -132,6 +132,7 @@ export default defineComponent({
                 const newUserPlace = await fetchUserPlace(user.id, newPlace.id);
                 console.log('final', newUserPlace);
                 alert("Guardado correctamente");
+                window.location.reload();
             } catch (error) {
                 alert("Error al registrar historial");
                 console.log(error);
