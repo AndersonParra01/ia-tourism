@@ -131,8 +131,10 @@ export default defineComponent({
                 const user = JSON.parse(localStorage.getItem("user")!);
                 const newUserPlace = await fetchUserPlace(user.id, newPlace.id);
                 console.log('final', newUserPlace);
+                alert("Guardado correctamente");
             } catch (error) {
                 alert("Error al registrar historial");
+                console.log(error);
                 return;
             }
         },

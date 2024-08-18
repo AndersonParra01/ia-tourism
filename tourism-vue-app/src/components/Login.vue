@@ -59,4 +59,58 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<<<<<<< HEAD <style scoped></style>
+  =======
+  <style scoped>
+  .abs-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+
+  form {
+    text-align: center;
+    margin: auto;
+    width: 50%;
+    max-width: 325px;
+    min-width: 325px;
+    padding: 0 30px 30px 30px;
+    opacity: 0.85;
+    box-shadow: 0px 0px 10px rgb(6, 7, 45), 0px 0px 30px white;
+  }
+
+  .form-control {
+    display: block;
+    padding: 10px;
+    width: 100%;
+    margin: 5px 0;
+    font-size: 18px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    height: 35px;
+    border: 1px solid #6b6767;
+  }
+
+  .btn {
+    width: 100%;
+    margin-bottom: 15px;
+    height: 35px;
+    border-radius: 10px;
+  }
+
+  .imagenUsuario {
+    margin-top: -50px;
+    margin-bottom: 35px;
+  }
+
+  .imagenUsuario img {
+    width: 100px;
+    height: 100px;
+    box-shadow: 0px 0px 3px #848484;
+    border-radius: 50%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+</style>
+  >>>>>>> 49e8b469ca6e3273edb5c6047bffc133290ad629

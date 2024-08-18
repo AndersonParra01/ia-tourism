@@ -20,7 +20,7 @@ export default defineComponent({
 
     const showText = (newText: string) => {
       const words = newText.split(' ');
-      const interval = 50;
+      const interval = 50; // Tiempo en milisegundos entre cada palabra
 
       const timer = setInterval(() => {
         if (index.value < words.length) {

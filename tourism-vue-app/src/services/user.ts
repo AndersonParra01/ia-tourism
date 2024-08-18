@@ -50,7 +50,7 @@ export const fetchUserPlace = async (userId: number, placeId: number) => {
 
 export const fetchUserPlaceDelete = async (userId: number, placeId: number) => {
   try {
-    const url = "http://localhost:8000/api/users/deleteFromPlace";
+    const url = "http://localhost:8000/api/users/remove-users-from-place";
     const response = await axios.post(url, {
       place_id: placeId,
       user_ids: userId,

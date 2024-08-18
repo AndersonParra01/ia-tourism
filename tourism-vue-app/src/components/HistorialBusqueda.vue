@@ -133,6 +133,7 @@ export default defineComponent({
                     await fetchUserPlaceDelete(userSave.id, id);
                 }
                 loadPlaces();
+                window.location.reload();
                 selectedItems.value = [];
             } catch (error) {
                 console.error('Error al eliminar los lugares:', error);
