@@ -48,6 +48,13 @@
                             <div class="flex items-center">
                                 <i class="bx bx-world mr-2 text-green-600"></i>
                                 <span class="text-gray-700">{{ item.description_place }}</span>
+                                <div v-if="item.especific_destination" class="flex flex-wrap">
+                                    <span v-for="(value, key) in formatEspecificDestination(item.especific_destination)"
+                                        :key="key" class="text-gray-700 mr-2">
+                                        <strong>{{ key }}:</strong> {{ value }}
+                                    </span>
+                                </div>
+
                             </div>
                             <div class="text-gray-500">{{ item.url }}</div>
 
@@ -157,6 +164,20 @@ export default defineComponent({
             deleteSelectedItems,
             isLoading
         };
+    },
+    methods: {
+        formatEspecificDestination(data: any) {
+            const result: { [key: string]: string } = {};
+            const pairs = data.split('/');
+            pairs.forEach((pair: any) => {
+                const [key, value] = pair.split(':');
+
+                if (key && value) {
+                    result[key.trim()] = value.trim();
+                }
+            });
+            return result;
+        }
     }
 });
 </script>

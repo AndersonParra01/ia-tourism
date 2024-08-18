@@ -6,14 +6,14 @@ from user.serializers import UserSerializer
 class TouristPlaceListSerializer(serializers.ModelSerializer):
     class Meta:
         model = TouristPlace
-        fields = ['id', 'description_place', 'typical_food', 'languages', 'traditional_music', 'city_tourist_map', 'map_of_tourist_places_in_ecuador', 'hotels', 'regions', 'created_at']
+        fields = ['id', 'description_place', 'typical_food', 'languages', 'traditional_music', 'city_tourist_map', 'map_of_tourist_places_in_ecuador', 'hotels', 'regions', 'especific_destination', 'created_at']
 
 class TouristPlaceDetailWriteSerializer(serializers.ModelSerializer):
     users = serializers.PrimaryKeyRelatedField(many=True, queryset=CustomUser.objects.all())
 
     class Meta:
         model = TouristPlace
-        fields = ['id', 'description_place', 'typical_food', 'languages', 'traditional_music', 'city_tourist_map', 'map_of_tourist_places_in_ecuador', 'hotels', 'regions','created_at', 'users']
+        fields = ['id', 'description_place', 'typical_food', 'languages', 'traditional_music', 'city_tourist_map', 'map_of_tourist_places_in_ecuador', 'hotels', 'regions', 'especific_destination', 'created_at', 'users']
 
     def create(self, validated_data):
         print('validated_data:', validated_data)
@@ -41,4 +41,4 @@ class TouristPlaceReadSerializer(serializers.ModelSerializer):
     users = UserSerializer(many=True, read_only=True)
     class Meta:
         model = TouristPlace
-        fields = ['id', 'description_place', 'typical_food', 'languages', 'traditional_music', 'city_tourist_map', 'map_of_tourist_places_in_ecuador', 'hotels', 'regions', 'created_at','users']
+        fields = ['id', 'description_place', 'typical_food', 'languages', 'traditional_music', 'city_tourist_map', 'map_of_tourist_places_in_ecuador', 'hotels', 'regions', 'especific_destination', 'created_at','users']

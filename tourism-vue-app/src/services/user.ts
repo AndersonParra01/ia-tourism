@@ -10,6 +10,7 @@ export interface Place {
   map_of_tourist_places_in_ecuador: string | null;
   hotels: string | null;
   regions: string | null;
+  especific_destination: string | null;
   created_at: string;
 }
 

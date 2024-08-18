@@ -76,6 +76,12 @@
           {{ $t("destineTuristico") }} "{{ selectedCard.ciudad }}"
         </h3>
 
+        <div class="flex justify-end m-4">
+          <button @click="saveInfo"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow">
+            Guardar
+          </button>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div v-if="selectedCard.transporte" class="bg-gray-100 p-4 rounded-lg shadow">
             <p class="text-gray-700 font-semibold">
@@ -277,8 +283,10 @@
             </p>
             <p class="text-gray-700">{{ selectedCard.comunicacion }}</p>
           </div>
+
         </div>
       </div>
+
     </div>
   </div>
 </template>
@@ -290,7 +298,8 @@ import {
   fetchCities,
 } from "../services/ia";
 import { defineComponent, onMounted, ref, watch } from "vue";
-
+import { apiPlaceCreate } from "./../services/place";
+import { fetchUserPlace } from "./../services/user";
 export default {
   setup() {
     const origen = ref("");
@@ -411,6 +420,40 @@ export default {
       this.destino = city;
       this.citiesD = []; // Limpia las sugerencias después de seleccionar
     },
+
+    convertObjectToString(obj) {
+      return Object.entries(obj)
+        .map(([key, value]) => {
+          if (Array.isArray(value)) {
+            return `${key}: ${value.join(', ')}`;
+          }
+          return `${key}: ${value}`;
+        })
+        .join(' / ');
+    },
+
+    async saveInfo() {
+      try {
+        console.log('Información a guardar:', this.selectedCard);
+        const dataToSave = this.convertObjectToString(this.selectedCard);
+        const newDetail = await apiPlaceCreate({
+          especific_destination: dataToSave,
+        })
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        setTimeout(async () => {
+          await fetchUserPlace(user.id, newDetail.id);
+        }, 1000);
+
+        alert('Información guardada con éxito');
+        this.closeModal();
+      } catch (error) {
+        console.error('Error al guardar la información:', error);
+        alert('Error al guardar la información');
+      }
+    },
+    closeModal() {
+      this.showModal = false;
+    }
   },
 };
 </script>

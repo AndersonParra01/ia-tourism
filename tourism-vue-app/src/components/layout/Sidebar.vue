@@ -21,10 +21,17 @@
             <ul>
                 <li v-for="place in places" :key="place.id"
                     class="p-4 hover:bg-blue-700 cursor-pointer flex items-center transition-colors duration-200 ease-in-out">
-                    <i class="bx bx-map mr-2"></i> {{ place.description_place ? place.description_place :
-                        $t('emptyPlace')
+                    <i class="bx bx-map mr-2"></i>
+                    {{
+                        (place.especific_destination ? place.especific_destination :
+                            place.description_place || $t('emptyPlace'))
+                            .split(' ')
+                            .slice(0, 40)
+                            .join(' ')
+                        + (place.especific_destination && place.especific_destination.split(' ').length > 40 ? '...' : '')
                     }}
                 </li>
+
             </ul>
         </nav>
     </div>
@@ -32,7 +39,7 @@
 
 <script lang="ts">
 import { ref, onMounted } from 'vue';
-import { fetchUserPlaces, Place } from '@/services/user'; // Importa el servicio
+import { fetchUserPlaces, Place } from '@/services/user';
 
 export default {
     name: 'Sidebar',

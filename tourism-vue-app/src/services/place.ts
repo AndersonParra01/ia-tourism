@@ -12,3 +12,13 @@ export const apiPlaceCreate = async (data: any): Promise<any> => {
     throw error;
   }
 };
+
+export const apiPlaceById = async (id: number): Promise<any> => {
+  try {
+    const response = await axios.get(API_URL + `/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error logging in:", error);
+    throw error;
+  }
+};
