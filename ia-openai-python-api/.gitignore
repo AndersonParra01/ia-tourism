@@ -35,3 +35,5 @@ ia-openai-python-api/.env.dist
 *.swp
 *.tmp
 .DS_Store
+
+echo "tourism-vue-app/.env" >> .gitignore
