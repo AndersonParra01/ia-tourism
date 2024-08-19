@@ -67,9 +67,9 @@
                                         class="block w-full text-left text-red-500 hover:bg-gray-100 px-4 py-2">
                                         Eliminar
                                     </button>
-                                    <button @click="editGeneraPlace(item.id)"
+                                    <button v-if="!item.especific_destination" @click="editGeneraPlace(item.id)"
                                         class="block w-full text-left text-blue-500 hover:bg-gray-100 px-4 py-2">
-                                        Editar
+                                        Ver
                                     </button>
                                 </div>
                             </div>
