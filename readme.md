@@ -110,3 +110,5 @@ Si deseas colaborar en este proyecto, sigue los pasos anteriores para clonar y l
 [Link - Video de levantamiento del aplicativo y su funcionamiento](https://drive.google.com/file/d/1RE-hHhV1n2JioV6dHoNqAxMf7lJUgUOY/view)
 
 [Link - variables de entorno `.env` ](https://drive.google.com/drive/folders/10cFbgwKae7ZBiWGGPfkz_N_BfL04No1p?usp=sharing)
+
+[Link - Informe ](https://docs.google.com/document/d/10iPMjzTr1vUxkhIEHxBdDy-ACK74_ZZs/edit?usp=sharing&ouid=106201933481073490667&rtpof=true&sd=true)
