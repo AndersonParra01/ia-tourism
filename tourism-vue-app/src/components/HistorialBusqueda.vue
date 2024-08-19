@@ -10,7 +10,7 @@
                     <div v-if="selectedItems.length != 0">
                         <button @click="deleteSelectedItems"
                             class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
-                            Eliminar Seleccionados
+                            {{ $t('deleteSelected') }}
                         </button>
                     </div>
 
@@ -65,11 +65,11 @@
                                     class="absolute right-0 bg-white shadow-md rounded-md mt-2 p-2 z-50">
                                     <button @click="deleteItem(item.id)"
                                         class="block w-full text-left text-red-500 hover:bg-gray-100 px-4 py-2">
-                                        Eliminar
+                                        {{ $t('delete') }}
                                     </button>
                                     <button v-if="!item.especific_destination" @click="editGeneraPlace(item.id)"
                                         class="block w-full text-left text-blue-500 hover:bg-gray-100 px-4 py-2">
-                                        Ver
+                                        {{ $t('view') }}
                                     </button>
                                 </div>
                             </div>

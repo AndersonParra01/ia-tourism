@@ -88,6 +88,7 @@ const messages = {
     destineTuristico: "Tourist Destination",
     save: "Save",
     exit: "Exit",
+    view: "View",
   },
   es: {
     welcome: "OpenAI Asistente de Turismo Virtual Ec",
@@ -176,7 +177,8 @@ const messages = {
     destineTuristico: "Destino Turístico",
     save: "Guardar",
     exit: "Salir",
-  },
+    view: "Ver",
+   },
 };
 
 const i18n = createI18n({
