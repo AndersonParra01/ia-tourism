@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Place } from "./user";
 
 const API_URL = "http://localhost:8000/api/places";
 
@@ -15,7 +16,7 @@ export const apiPlaceCreate = async (data: any): Promise<any> => {
 
 export const apiPlaceById = async (id: number): Promise<any> => {
   try {
-    const response = await axios.get(API_URL + `/${id}`);
+    const response = await axios.get(API_URL + "/get" + `/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error logging in:", error);

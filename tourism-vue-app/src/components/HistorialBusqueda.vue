@@ -67,6 +67,10 @@
                                         class="block w-full text-left text-red-500 hover:bg-gray-100 px-4 py-2">
                                         Eliminar
                                     </button>
+                                    <button @click="editGeneraPlace(item.id)"
+                                        class="block w-full text-left text-blue-500 hover:bg-gray-100 px-4 py-2">
+                                        Editar
+                                    </button>
                                 </div>
                             </div>
                         </li>
@@ -80,9 +84,11 @@
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted } from 'vue';
 import { Place, fetchUserPlaceDelete, fetchUserPlaces } from '@/services/user';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
     setup() {
+        const router = useRouter();
         const searchQuery = ref<string>('');
         const history = ref<Place[]>([]);
         const menuOpen = ref<number | null>(null);
@@ -162,7 +168,8 @@ export default defineComponent({
             menuOpen,
             selectedItems,
             deleteSelectedItems,
-            isLoading
+            isLoading,
+            router
         };
     },
     methods: {
@@ -177,6 +184,11 @@ export default defineComponent({
                 }
             });
             return result;
+        },
+        editGeneraPlace(id: number) {
+            console.log('Editar lugar:', id);
+            this.router.push(`/destino-favorito/${id}`);
+
         }
     }
 });

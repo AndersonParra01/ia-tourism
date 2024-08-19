@@ -87,6 +87,7 @@ const messages = {
     clearButton: "Clear",
     destineTuristico: "Tourist Destination",
     save: "Save",
+    exit: "Exit",
   },
   es: {
     welcome: "OpenAI Asistente de Turismo Virtual Ec",
@@ -174,6 +175,7 @@ const messages = {
     clearButton: "Limpiar",
     destineTuristico: "Destino Turístico",
     save: "Guardar",
+    exit: "Salir",
   },
 };
 

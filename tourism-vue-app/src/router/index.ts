@@ -5,6 +5,7 @@ import Map from "../components/Map.vue";
 import Tourism from "@/components/tourism.vue";
 import Recomendacion from "@/components/Recomendacion.vue";
 import HistorialBusqueda from "@/components/HistorialBusqueda.vue";
+import PlaceDetails from "@/components/PlaceDetails.vue";
 
 const routes = [
   {
@@ -35,6 +36,11 @@ const routes = [
     path: "/historial-busquedas",
     name: "HistorialBusqueda",
     component: HistorialBusqueda,
+  },
+  {
+    path: "/destino-favorito/:id",
+    name: "DestinoFavorito",
+    component: PlaceDetails,
   },
   {
     path: "/recomendaciones",
