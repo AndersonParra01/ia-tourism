@@ -100,6 +100,13 @@ http://localhost:8080
 
 Si deseas colaborar en este proyecto, sigue los pasos anteriores para clonar y levantar el proyecto en tu entorno local. Luego, puedes realizar cambios, agregar nuevas funcionalidades y enviar pull requests para revisión.
 
-## Recuerda agregar el archivo `.env` en el backend.
+## Recuerda agregar el archivo `.env` en el backend y el frontend.
 
 ![Descripción de la imagen](images/ENV.png)
+![Descripción de la imagen](images/ENVFRONT.png)
+
+## Se adjunta el video de levantamiento del proyecto y las variables de ENTORNO UTILIZADAS
+
+[Link - Video de levantamiento del aplicativo y su funcionamiento](https://drive.google.com/file/d/1RE-hHhV1n2JioV6dHoNqAxMf7lJUgUOY/view)
+
+[Link - variables de entorno `.env` ](https://drive.google.com/drive/folders/10cFbgwKae7ZBiWGGPfkz_N_BfL04No1p?usp=sharing)
