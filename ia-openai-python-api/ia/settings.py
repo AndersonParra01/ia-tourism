@@ -70,7 +70,8 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "http://localhost:3000",
-    "https://grupo1consulti.pythonanywhere.com"
+    "https://grupo1consulti.pythonanywhere.com",
+    "ia-tourism.onrender.com"
 ]
 
 
