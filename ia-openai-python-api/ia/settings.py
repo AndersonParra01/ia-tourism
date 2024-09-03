@@ -68,9 +68,9 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
+    "https://ia-tourism.onrender.com",
     "http://localhost:8080",
-    "http://localhost:3000",
-    "https://ia-tourism.onrender.com"
+    "http://localhost:3000"
 ]
 
 
