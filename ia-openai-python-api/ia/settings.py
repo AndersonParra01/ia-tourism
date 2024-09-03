@@ -71,7 +71,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "http://localhost:3000",
     "https://grupo1consulti.pythonanywhere.com",
-    "https://ia-tourism.onrender.com/"
+    "https://ia-tourism.onrender.com"
 ]
 
 
